@@ -52,6 +52,40 @@
     <h2>Tech stack</h2>
     <p>Zero-dependency Node.js server (web UI + JSON API), Solana/Anchor USDC escrow spec'd in-repo, built with Claude Code + Cursor.</p>
   </section>
+
+  <section id="team">
+    <h2>Team tracks — pick yours</h2>
+    <div class="tracks">
+      <div class="track">
+        <h3>Track A — "The Vault"</h3>
+        <p class="owner">Solana person</p>
+        <p>Build the on-chain safe that holds the buyer's money until the deal is done. Nobody gets paid until delivery is confirmed or a timer runs out.</p>
+      </div>
+      <div class="track">
+        <h3>Track B — "The Brain"</h3>
+        <p class="owner">Backend</p>
+        <p>The backend server that manages everything — the database, the safety rails (no double-buys), and the one place all data flows through. Think of it as the bank that manages the vault.</p>
+      </div>
+      <div class="track">
+        <h3>Track C — "The Robot Door"</h3>
+        <p class="owner">Agent API</p>
+        <p>The entrance AI agents use. Same inventory, same rules, but an AI can search/buy/confirm without a human touching a browser. This is the differentiator — no other ticket marketplace has this.</p>
+      </div>
+      <div class="track">
+        <h3>Track D — "The Human Door"</h3>
+        <p class="owner">Web + biz</p>
+        <p>The website for normal people, plus the business stuff (applying for Stripe/Crossmint today, reaching out to conference organizers for supply).</p>
+      </div>
+    </div>
+    <div class="rules">
+      <h3>Three rules</h3>
+      <ol>
+        <li>Freeze the shared contracts together on day 1.</li>
+        <li>The critical path flows A→B→C (D runs in parallel — help the track to your left if you finish early).</li>
+        <li>The website can never do something the agent API can't — that's the whole product promise.</li>
+      </ol>
+    </div>
+  </section>
 </main>
 
 <footer>
