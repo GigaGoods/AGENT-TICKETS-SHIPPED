@@ -3,6 +3,9 @@
   "private": true,
   "scripts": {
     "demo": "node server.js",
+    "crank": "ts-node scripts/crank.ts",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "setup:devnet": "ts-node scripts/setup-devnet.ts",
     "test": "anchor test"
   },
   "devDependencies": {

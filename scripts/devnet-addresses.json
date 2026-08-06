@@ -1,0 +1,7 @@
+{
+  "cluster": "devnet",
+  "rpcUrl": "https://api.devnet.solana.com",
+  "programId": "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS",
+  "usdcMint": "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU",
+  "_note": "programId is the placeholder from declare_id!/Anchor.toml. Replace with the real deployed keypair pubkey after `anchor deploy --provider.cluster devnet`. usdcMint is the devnet USDC-Dev faucet mint; the crank reads the authoritative mint from the on-chain Config account and only falls back to this value."
+}
