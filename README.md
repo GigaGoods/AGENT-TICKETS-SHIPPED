@@ -1,30 +1,28 @@
 # Agent-Tickets
 
 **Product name + one-liner**
-Agent-Tickets — a peer-to-peer marketplace for buying and selling event tickets, with funds held in Solana escrow, that AI agents can buy and sell on directly.
+Agent-Tickets — a peer-to-peer event-ticket marketplace where humans and AI agents alike can list and browse tickets, designed to settle in USDC escrow on Solana.
 
 **Problem**
-Resale platforms like StubHub charge 20-30% in combined fees and pay sellers out days later, while buyers have no real guarantee the ticket is valid until they're at the door. There's also no way for an AI shopping agent to actually complete a ticket purchase today — every platform requires a human clicking through a checkout flow.
+Resale platforms charge 20–30% in combined fees, and none of them let an AI shopping agent transact — every checkout assumes a human clicking a webpage. Meanwhile the P2P resale that already happens in DMs and group chats has zero protection for either side.
 
 **Solution**
-Sellers list a ticket and price in USDC; buyer funds lock into an on-chain Solana escrow program instead of going straight to the seller. Funds release to the seller automatically when the buyer confirms receipt (or after a timeout), cutting fees and payout delay versus incumbents. The same list/buy flow is exposed through a public API and MCP server, so an AI agent can search listings and complete a purchase without a human in the loop.
+One live marketplace with two front doors: a human lists a ticket with a simple form, an AI agent lists or reads inventory with a single JSON API call, and both see the same listings instantly. Agents are first-class users of the exact same inventory — not scrapers. The Solana USDC escrow settlement layer is fully designed (spec committed in the repo) and slots onto this listing rail next.
 
 **Core features (V1)**
-- List a ticket for sale (event name, date, price in USDC)
-- Browse/search live listings on the web
-- Buy a ticket: funds lock into a Solana escrow smart contract on purchase
-- Buyer-confirm releases escrow to seller (or auto-releases after a timeout)
-- MCP/API endpoint so an agent can list available tickets and execute a purchase end-to-end
+- List a ticket for sale via web form: event name, date, venue, price in USDC
+- Live listings page — new tickets appear instantly for everyone
+- Agent JSON API: `POST /api/listings` to list a ticket, `GET /api/listings` to read inventory — same live data as the web UI
+- Validation with machine-readable errors so agent callers can self-correct
 
-**Out of scope**
+**Out of scope** (cut at submission — scope-lock rules allow cuts, not adds)
+- On-chain escrow purchase/release flow — fully designed in the repo's design doc, not live tonight
+- MCP server wrapper (the JSON API is tonight's agent surface)
+- Fiat onramp, disputes/arbitration, KYC/compliance, mobile apps
 - Native NFT ticket issuance and venue/door verification
-- Fiat onramp for non-crypto users (wallet + USDC only tonight)
-- Dispute resolution / arbitration for bad-faith claims
-- Mobile apps
-- KYC, sanctions screening, and other regulatory compliance flows
 
 **Success criteria**
-On stage: list a mock ticket from wallet A, then have an AI agent (via the MCP/API) autonomously find and buy it from wallet B — USDC moves into the on-chain escrow and releases to the seller, confirmed on Solana devnet, in under 60 seconds.
+On stage: a judge lists a ticket through the web form and watches it appear instantly in live listings; then an AI agent creates a second listing through `POST /api/listings` and both listings show in `GET /api/listings` and on the page — all live, in under 30 seconds.
 
 **Tech stack**
-Next.js + Vercel, Anchor/Solana (devnet) escrow program, Phantom wallet adapter, MCP server for agent access, built in Cursor.
+Zero-dependency Node.js server (web UI + JSON API), Solana/Anchor USDC escrow spec'd in-repo, built with Claude Code + Cursor.
