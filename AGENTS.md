@@ -10,9 +10,11 @@ timeout settles it), replacing the 20–30% cut a custodial resale platform take
 The same marketplace is exposed over an MCP server and a public HTTP API so AI
 agents can list, browse, and purchase without a human in the loop.
 
-**Status: pre-implementation.** The repo is not scaffolded yet — `README.md`
-describes the intended V1, not shipped code. Expect to create directories rather
-than find them.
+**Status: frontend scaffolded.** The Next.js app (`app/`, `components/`,
+`lib/`), static assets under `public/`, and an `mcp/` stub exist. The Anchor
+escrow program (`programs/`, `tests/`) and the real `/api/listings` route
+handlers are not implemented yet — listings are a client-side localStorage
+store for the demo. `README.md` describes the target V1.
 
 Devnet only. Nothing in this repo should touch mainnet or real funds.
 
@@ -93,15 +95,17 @@ The Anchor commands need the Solana CLI and Anchor toolchain installed
 separately — they are not npm dependencies, so `anchor:*` scripts will fail on a
 machine that only ran `npm install`.
 
-## Intended layout
+## Layout
 
 ```
-app/            Next.js routes — listings, purchase flow, wallet connect
-components/     UI, wallet adapter providers
-lib/            Solana client, escrow program bindings, USDC helpers
-programs/       Anchor escrow program (Rust)
-tests/          Anchor integration tests
-mcp/            MCP server exposing the marketplace to agents
+app/            Next.js routes — home, listings, buy flow, trust, agent API docs
+components/     shared UI — header, footer, listing card, icons
+lib/            client listing store + hook (Solana client, escrow bindings later)
+public/         fonts, design tokens, printable docs (doc-page shell)
+prototype/      archived static HTML prototype the app was ported from
+mcp/            MCP server — stub only; V1's agent surface is the JSON API
+programs/       Anchor escrow program (Rust) — not created yet
+tests/          Anchor integration tests — not created yet
 ```
 
 ## Conventions
