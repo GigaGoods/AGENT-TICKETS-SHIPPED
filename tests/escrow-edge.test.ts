@@ -248,6 +248,7 @@ describe("agent_tickets_escrow — edge cases", () => {
         vault,
         buyerToken,
         usdcMint,
+        tokenProgram: TOKEN_PROGRAM_ID,
       })
       .signers([seller])
       .rpc();
