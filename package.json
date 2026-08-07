@@ -1,0 +1,14 @@
+{
+  "name": "agent-tickets",
+  "version": "0.1.0",
+  "description": "P2P event ticket marketplace with agent API and document verification",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test",
+    "verify:doc": "node examples/verify-document.js"
+  }
+}
