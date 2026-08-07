@@ -18,6 +18,15 @@
 .toast{position:fixed;left:50%;bottom:32px;transform:translate(-50%,16px);background:var(--ink);color:#fff;border-radius:var(--r-full);padding:12px 24px;font-size:14px;font-weight:500;opacity:0;pointer-events:none;transition:all 300ms ease;z-index:60}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 @media(max-width:960px){.page{grid-template-columns:1fr}.sell{position:static;order:-1}}
+.verify-block{display:grid;gap:12px;padding:16px;border:1px solid var(--line,#e5e5e5);border-radius:12px}
+.upload{display:grid;gap:6px;justify-items:center;text-align:center;padding:24px;border:2px dashed var(--line,#ccc);border-radius:12px;cursor:pointer;transition:all .2s}
+.upload:hover,.upload.drag{border-color:var(--blue,#5b4cd4);background:rgba(91,76,212,.04)}
+.upload.has{border-style:solid;border-color:var(--green,#3a8f6e)}
+.privacy{font-size:12px;color:var(--steel,#777)}
+.vstatus{padding:12px;border-radius:8px;font-size:14px;background:#f4f4f7}
+.vstatus.ok{background:#e2f4ec;color:#1a6a4c}
+.vstatus.warn{background:#faf0dc;color:#7a5a12}
+.vstatus.bad{background:#fce8e6;color:#a1372c}
 </style>
 </head>
 <body>
@@ -41,7 +50,18 @@
 <div class="field" data-f="date"><label for="f-date">Event date</label><input id="f-date" name="date" type="date" value="2026-08-08"><span class="error">A valid date is required.</span></div>
 <div class="field" data-f="venue"><label for="f-venue">Venue</label><input id="f-venue" name="venue" value="Club Space Miami" placeholder="The Anthem, Washington DC" autocomplete="off"><span class="error">Venue is required.</span></div>
 <div class="field" data-f="price"><label for="f-price">Price (USDC)</label><input id="f-price" name="price" type="number" min="1" step="1" value="185" placeholder="145"><span class="error">Price must be a number greater than 0.</span></div>
-<button class="btn btn-primary" type="submit">Publish listing</button>
+<div class="verify-block">
+<span class="overline">Step 2 · Verify proof of purchase</span>
+<label class="upload" id="drop">
+<input type="file" id="file" accept=".png,.jpg,.jpeg,.webp,.pdf" hidden>
+<strong id="dropTitle">Drop your order confirmation here</strong>
+<span id="dropSub">or click to browse · PNG, JPG, WEBP or PDF · max 8 MB</span>
+</label>
+<span class="privacy">Redact QR codes, barcodes, and personal data first. The file is sent for one check and is not stored.</span>
+<div class="vstatus" id="vstatus" hidden></div>
+<button class="btn btn-secondary" type="button" id="verifyBtn" disabled>Verify document</button>
+</div>
+<button class="btn btn-primary" type="submit" id="publishBtn">Publish listing</button>
 <span class="hint">Goes live instantly for everyone, including agents reading GET /api/listings. Agents list through the <a href="api.html">JSON API</a>.</span>
 </form>
 </aside>
@@ -60,6 +80,7 @@ document.getElementById('form').addEventListener('submit',function(ev){
 ev.preventDefault();
 const f=ev.target;
 const body={event:f.event.value,date:f.date.value,venue:f.venue.value,price:f.price.value};
+body.verified=(vState==='verified');
 const res=AT.add(body,'human');
 document.querySelectorAll('.field').forEach(function(el){el.classList.remove('invalid')});
 if(!res.ok){res.errors.forEach(function(e){const el=document.querySelector('.field[data-f="'+e.field+'"]');if(el)el.classList.add('invalid')});return}
@@ -67,6 +88,51 @@ f.reset();
 render(res.listing.id);
 const t=document.getElementById('toast');t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2500);
 });
+
+var vState='idle', vFile=null;
+var drop=document.getElementById('drop'),fileIn=document.getElementById('file');
+var vBtn=document.getElementById('verifyBtn'),vStat=document.getElementById('vstatus');
+function setStat(msg,cls){vStat.hidden=!msg;vStat.textContent=msg||'';vStat.className='vstatus'+(cls?' '+cls:'')}
+drop.addEventListener('click',function(){fileIn.click()});
+drop.addEventListener('dragover',function(e){e.preventDefault();drop.classList.add('drag')});
+drop.addEventListener('dragleave',function(){drop.classList.remove('drag')});
+drop.addEventListener('drop',function(e){e.preventDefault();drop.classList.remove('drag');take(e.dataTransfer.files[0])});
+fileIn.addEventListener('change',function(e){take(e.target.files[0])});
+function take(f){
+if(!f)return;
+if(f.size>8*1024*1024){setStat('That file is over the 8 MB upload limit.','bad');return}
+vFile=f;vState='ready';drop.classList.add('has');
+document.getElementById('dropTitle').textContent=f.name;
+document.getElementById('dropSub').textContent=(f.size/1024).toFixed(0)+' KB · ready for verification';
+vBtn.disabled=false;setStat('','');
+}
+vBtn.addEventListener('click',function(){
+if(!vFile||vState==='checking')return;
+vState='checking';vBtn.disabled=true;
+setStat('Analyzing your ticket — reading fields and matching the listing…','');
+var fd=new FormData();fd.append('document',vFile);
+fd.append('eventName',document.getElementById('f-event').value);
+fd.append('eventDate',document.getElementById('f-date').value);
+fd.append('venue',document.getElementById('f-venue').value);
+fd.append('priceUsdc',document.getElementById('f-price').value);
+fetch('/api/verify',{method:'POST',body:fd}).then(function(r){return r.json()}).then(function(d){
+if(d&&d.ok&&d.verification){
+var v=d.verification;
+if(v.status==='verified'){vState='verified';setStat('Purchase evidence matched ('+Math.round((v.confidence||0)*100)+'% confidence). Ready to publish.','ok')}
+else if(v.status==='needs_review'){vState='review';setStat('Ticket detected — manual review needed: '+(v.reviewReasons&&v.reviewReasons[0]||'see details'),'warn')}
+else{vState='rejected';setStat(v.rejectionReason||'The document did not match the listing details.','bad')}
+}else{
+vState='unavailable';
+setStat('Verification is offline on this static demo (no server). You can still publish — the listing just won\'t carry the verified badge.','warn');
+}
+vBtn.disabled=false;
+}).catch(function(){
+vState='unavailable';
+setStat('Verification is offline on this static demo (no server). You can still publish — the listing just won\'t carry the verified badge.','warn');
+vBtn.disabled=false;
+});
+});
+
 </script>
 </body>
 </html>
