@@ -1,14 +1,35 @@
 {
   "name": "agent-tickets",
   "version": "0.1.0",
-  "description": "P2P event ticket marketplace with agent API and document verification",
+  "private": true,
+  "description": "P2P event ticket marketplace with agent API, document verification, and on-chain USDC escrow",
   "type": "module",
   "engines": {
     "node": ">=18"
   },
   "scripts": {
     "start": "node server.js",
-    "test": "node --test",
-    "verify:doc": "node examples/verify-document.js"
+    "test": "node --test tests/google-vision.test.js tests/validator.test.js",
+    "test:escrow": "anchor test",
+    "test:edge": "ts-mocha -p ./tsconfig.json -t 1000000 tests/escrow-edge.test.ts",
+    "verify:doc": "node examples/verify-document.js",
+    "verify:track-a": "node scripts/verify-track-a.mjs",
+    "verify:track-a:full": "node scripts/verify-track-a.mjs --tests",
+    "crank": "ts-node scripts/crank.ts",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "setup:devnet": "ts-node scripts/setup-devnet.ts"
+  },
+  "devDependencies": {
+    "@coral-xyz/anchor": "^0.31.1",
+    "@solana/spl-token": "^0.4.9",
+    "@solana/web3.js": "^1.98.0",
+    "@types/chai": "^4.3.16",
+    "@types/mocha": "^10.0.7",
+    "@types/node": "^22.5.0",
+    "chai": "^4.4.1",
+    "mocha": "^10.7.0",
+    "ts-mocha": "^10.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.2"
   }
 }

@@ -1,0 +1,30 @@
+{
+  "cluster": "devnet",
+  "rpcUrl": "https://api.devnet.solana.com",
+  "programId": "J26zGhTfnDVqNZcRwerK5Aen7BXyGnjjxkG9CXkbSCRv",
+  "usdcMint": "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU",
+  "_note": "programId is the real keypair pubkey (target/deploy) synced into declare_id!/Anchor.toml; devnet deploy pending SOL funding. Session 1 (build lane) owns this file post-deploy. usdcMint is the devnet USDC-Dev faucet mint; the crank reads the authoritative mint from the on-chain Config account and only falls back to this value.",
+  "testUsdcMint": "8ojgAs4EJBjJFQxJJVFLoieGjEpfGrH9zSao3XxVUEjh",
+  "testUsdcDecimals": 6,
+  "testUsdcMintAuthority": "D4E4vqwamFbgzDg9miGYcxsNyjnHBT5GbLehgXYLhU14",
+  "_testUsdcMintNote": "testUsdcMint is the 6-decimal TEST mint created by setup-devnet.ts (authority = the first team wallet). The team wallets in `wallets` hold THIS mint, not the shared devnet USDC-Dev mint in `usdcMint`. initialize_config MUST set Config.usdc_mint = testUsdcMint, or lock_purchase fails the InvalidMint constraint.",
+  "wallets": {
+    "alice": {
+      "pubkey": "D4E4vqwamFbgzDg9miGYcxsNyjnHBT5GbLehgXYLhU14",
+      "usdcAta": "3eiZDwo8o2LxGKV7t3jWy9KGUgbPs81aQHGh71h6vGCA"
+    },
+    "bob": {
+      "pubkey": "GQTWAYbCgD2wiJswTG8jCQA1aGUdTDD4nkU44x6oCgZf",
+      "usdcAta": "AeXGAns9W2utdXLaac4yo4WaeAa9j4bjweDHVSwV1UyY"
+    },
+    "carol": {
+      "pubkey": "4Pe6G6HuYP3xBCTK5cVsrY7qFtHt3DB59cRCeWy1c2Gr",
+      "usdcAta": "EZLmsDDD5CVfq7nxrugkmkv6sBGUX6Bkigej85X2ZBh6"
+    },
+    "dave": {
+      "pubkey": "5exZrx5GnhR8BAmDQ7bgUk7DQJpxUBWGG5WohZCpS2qM",
+      "usdcAta": "HuJA7NNMTNjoMQX6jsjkhczAyaPrgtXQU2jQJ9NDyB6N"
+    }
+  },
+  "updatedAt": "2026-08-07T00:56:01.809Z"
+}
