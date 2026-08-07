@@ -40,10 +40,12 @@ const FEE_BPS = 300;
 const sleep = (s: number) => new Promise((r) => setTimeout(r, s * 1000));
 
 // Mocha loads every spec file before running any of them, so this is decided by the
-// time `before` fires.
-const SHARES_VALIDATOR_WITH_BASE_SUITE = Object.keys(require.cache).some((p) =>
-  /(^|[\\/])escrow\.test\.ts$/.test(p)
-);
+// time `before` fires. Under Node's native ESM loader `require.cache` doesn't exist —
+// there the suite always runs standalone (npm run test:edge), so no collision is possible.
+const SHARES_VALIDATOR_WITH_BASE_SUITE =
+  typeof require !== "undefined" && require.cache
+    ? Object.keys(require.cache).some((p) => /(^|[\\/])escrow\.test\.ts$/.test(p))
+    : false;
 
 describe("agent_tickets_escrow — edge cases", () => {
   const provider = anchor.AnchorProvider.env();
