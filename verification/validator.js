@@ -193,34 +193,36 @@ export function validateExtractedDocument(
     (match) => !match.matched && !['eventName', 'eventDate'].includes(match.field)
   );
 
+  // Loose-ticket policy: the check answers ONE question — is this plausibly a
+  // ticket document? If yes it verifies; if it clearly isn't one, it rejects.
+  // Soft signals (image quality, tampering heuristics, unreadable optional
+  // fields, non-critical mismatches) are reported for transparency but never
+  // block a listing — they were producing false "manual review" on ordinary
+  // phone screenshots of real tickets.
   if (!ticketDetected) {
     status = VERIFICATION_STATUS.REJECTED;
     rejectionReason = 'The uploaded image was not recognized as a ticket document';
-  } else if (!eventMatched || !dateMatchedResult) {
-    status = VERIFICATION_STATUS.REJECTED;
-    rejectionReason = !eventMatched
-      ? 'Ticket event does not match the listing'
-      : 'Ticket date does not match the listing';
-  } else if (confidence < REJECT_THRESHOLD) {
-    status = VERIFICATION_STATUS.REJECTED;
-    rejectionReason = 'Confidence too low to verify document';
   } else {
+    status = VERIFICATION_STATUS.VERIFIED;
+
     if (confidence < REVIEW_THRESHOLD) {
       reviewReasons.push('Document or listing-match confidence is below 75%');
     }
     if (reviewFlags.length > 0) {
-      reviewReasons.push(`Gemini review flag: ${reviewFlags.join(', ')}`);
+      reviewReasons.push(`Image quality note: ${reviewFlags.join(', ')}`);
     }
     if (missingRequired.length > 0) {
-      reviewReasons.push(`Could not read required fields: ${missingRequired.join(', ')}`);
+      reviewReasons.push(`Could not read: ${missingRequired.join(', ')}`);
+    }
+    if (!eventMatched) {
+      reviewReasons.push('Event name differs from the listing');
+    }
+    if (!dateMatchedResult) {
+      reviewReasons.push('Event date differs from the listing');
     }
     if (nonCriticalMismatch) {
       reviewReasons.push(nonCriticalMismatch.reason ?? `${nonCriticalMismatch.field} mismatch`);
     }
-  }
-
-  if (status === VERIFICATION_STATUS.VERIFIED && reviewReasons.length > 0) {
-    status = VERIFICATION_STATUS.NEEDS_REVIEW;
   }
 
   return {

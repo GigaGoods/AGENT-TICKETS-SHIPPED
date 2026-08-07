@@ -33,7 +33,17 @@ Rules:
 - if only month and day are visible, return MM-DD (for example 08-08); never infer or invent a year
 - eventName should contain the complete displayed event or lineup title, not only one artist
 - platform examples: Ticketmaster, Eventbrite, AXS, SeatGeek, StubHub, Dice, See Tickets
+- ticketDetected: answer LOOSELY — set true for anything that plausibly functions as a ticket
+  or proof of purchase (mobile ticket, order confirmation, email receipt, PDF ticket, wallet pass,
+  screenshot of any of these), even when fields are partly unreadable or the event differs.
+  Set it false only when the image clearly is NOT a ticket at all (a selfie, a landscape, a meme,
+  a random object, a blank screen, an unrelated document).
 - confidence is 0.0–1.0 based on image clarity and field certainty
 - a normal direct screenshot of a ticket app is valid and must NOT be flagged merely for being a screenshot
 - only add flags for concrete concerns; do not flag missing optional fields
+- only use "suspicious_editing" when you can point to concrete tampering evidence: mismatched fonts,
+  misaligned or overlapping text, cloned pixel regions, or fields that contradict each other.
+  Cropping, compression artifacts, redacted barcodes, dark mode, and phone screenshots are NORMAL and
+  must NOT be flagged as editing.
+- when in doubt, return no flag rather than a speculative one
 - flags examples: "blurry_image", "cropped_document", "possible_screenshot_of_screenshot", "suspicious_editing"`;

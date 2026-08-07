@@ -90,6 +90,15 @@ const t=document.getElementById('toast');t.classList.add('show');setTimeout(func
 });
 
 var vState='idle', vFile=null;
+function showApprove(){
+if(document.getElementById('approveBtn'))return;
+var b=document.createElement('button');
+b.id='approveBtn';b.type='button';b.className='btn btn-secondary';
+b.textContent='Approve for this demo only';
+b.onclick=function(){vState='verified';setStat('Manually approved for this demo. This does not prove authenticity.','ok');b.remove()};
+vStat.parentNode.insertBefore(b,vStat.nextSibling);
+}
+
 var drop=document.getElementById('drop'),fileIn=document.getElementById('file');
 var vBtn=document.getElementById('verifyBtn'),vStat=document.getElementById('vstatus');
 function setStat(msg,cls){vStat.hidden=!msg;vStat.textContent=msg||'';vStat.className='vstatus'+(cls?' '+cls:'')}
@@ -110,16 +119,20 @@ vBtn.addEventListener('click',function(){
 if(!vFile||vState==='checking')return;
 vState='checking';vBtn.disabled=true;
 setStat('Analyzing your ticket — reading fields and matching the listing…','');
-var fd=new FormData();fd.append('document',vFile);
-fd.append('eventName',document.getElementById('f-event').value);
-fd.append('eventDate',document.getElementById('f-date').value);
-fd.append('venue',document.getElementById('f-venue').value);
-fd.append('priceUsdc',document.getElementById('f-price').value);
-fetch('/api/verify',{method:'POST',body:fd}).then(function(r){return r.json()}).then(function(d){
+var reader=new FileReader();
+reader.onload=function(){
+var b64=String(reader.result).split(',')[1];
+fetch('/api/verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+documentBase64:b64,mimeType:vFile.type||'image/jpeg',
+listing:{eventName:document.getElementById('f-event').value,
+eventDate:document.getElementById('f-date').value,
+venue:document.getElementById('f-venue').value,
+priceUsdc:Number(document.getElementById('f-price').value)||undefined}
+})}).then(function(r){return r.json()}).then(function(d){
 if(d&&d.ok&&d.verification){
 var v=d.verification;
 if(v.status==='verified'){vState='verified';setStat('Purchase evidence matched ('+Math.round((v.confidence||0)*100)+'% confidence). Ready to publish.','ok')}
-else if(v.status==='needs_review'){vState='review';setStat('Ticket detected — manual review needed: '+(v.reviewReasons&&v.reviewReasons[0]||'see details'),'warn')}
+else if(v.status==='needs_review'){vState='review';setStat('Ticket detected — manual review needed: '+(v.reviewReasons&&v.reviewReasons[0]||'see details'),'warn');showApprove()}
 else{vState='rejected';setStat(v.rejectionReason||'The document did not match the listing details.','bad')}
 }else{
 vState='unavailable';
@@ -131,6 +144,8 @@ vState='unavailable';
 setStat('Verification is offline on this static demo (no server). You can still publish — the listing just won\'t carry the verified badge.','warn');
 vBtn.disabled=false;
 });
+};
+reader.readAsDataURL(vFile);
 });
 
 </script>

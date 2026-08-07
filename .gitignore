@@ -31,3 +31,6 @@ target/
 .anchor/
 test-ledger/
 *.log
+
+# Local Netlify folder
+.netlify
