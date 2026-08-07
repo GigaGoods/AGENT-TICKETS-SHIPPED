@@ -19,6 +19,7 @@
 // See docs/escrow-integration.md §9.1 for the underlying constraint.
 
 import * as anchor from "@coral-xyz/anchor";
+import BN from "bn.js";
 import { Program } from "@coral-xyz/anchor";
 import {
   createMint,
@@ -96,7 +97,7 @@ describe("agent_tickets_escrow — edge cases", () => {
     [configPda] = PublicKey.findProgramAddressSync([Buffer.from("config")], program.programId);
 
     await program.methods
-      .initializeConfig(FEE_BPS, new anchor.BN(DELIVERY_WINDOW), new anchor.BN(INSPECTION_WINDOW))
+      .initializeConfig(FEE_BPS, new BN(DELIVERY_WINDOW), new BN(INSPECTION_WINDOW))
       .accounts({
         config: configPda,
         authority: provider.wallet.publicKey,
@@ -115,10 +116,10 @@ describe("agent_tickets_escrow — edge cases", () => {
     const eventStart = Math.floor(Date.now() / 1000) + Math.round(hoursOut * 3600);
     await program.methods
       .createListing(
-        new anchor.BN(id.toString()),
-        new anchor.BN(price.toString()),
+        new BN(id.toString()),
+        new BN(price.toString()),
         Array.from(new Uint8Array(32).fill(7)),
-        new anchor.BN(eventStart),
+        new BN(eventStart),
         qty,
         "ipfs://edge"
       )
