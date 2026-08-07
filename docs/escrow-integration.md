@@ -92,7 +92,7 @@ const vaultAta = (usdcMint: PublicKey, order: PublicKey) =>
 | `listing` | `Pubkey` | |
 | `buyer` / `seller` | `Pubkey` | `seller` copied from the listing at lock. |
 | `amount` | `u64` | Snapshot of `listing.price` at lock. |
-| `fee_bps` | `u16` | **Snapshotted at lock** — a later `update_config` never repricesa live order. |
+| `fee_bps` | `u16` | **Snapshotted at lock** — a later `update_config` never reprices a live order. |
 | `state` | `OrderState` | `Locked \| Delivered \| Released \| Refunded \| Disputed \| ArbiterResolved`. |
 | `locked_ts` | `i64` | |
 | `delivery_deadline` | `i64` | Set at lock. |

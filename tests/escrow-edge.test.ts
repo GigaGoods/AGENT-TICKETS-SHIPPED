@@ -106,18 +106,18 @@ describe("agent_tickets_escrow — edge cases", () => {
       .rpc();
   });
 
-  // 3h out clears the 2h pre-event grace; override to test the EventTooSoon guard.
-  async function createListing(hoursOut = 3) {
+  // 3h out clears the 2h pre-event grace; override to test the create_listing guards.
+  async function createListing(hoursOut = 3, price = PRICE, qty = 1) {
     const id = nextListingId++;
     const listing = listingPda(seller.publicKey, id);
     const eventStart = Math.floor(Date.now() / 1000) + Math.round(hoursOut * 3600);
     await program.methods
       .createListing(
         new anchor.BN(id.toString()),
-        new anchor.BN(PRICE.toString()),
+        new anchor.BN(price.toString()),
         Array.from(new Uint8Array(32).fill(7)),
         new anchor.BN(eventStart),
-        1,
+        qty,
         "ipfs://edge"
       )
       .accounts({ config: configPda, listing, seller: seller.publicKey, systemProgram: SystemProgram.programId })
@@ -361,6 +361,23 @@ describe("agent_tickets_escrow — edge cases", () => {
     // 1h out: delivery could never complete 2h before doors, so the listing is refused
     // at creation rather than becoming an unbuyable ghost.
     await expectError("EventTooSoon", () => createListing(1));
+  });
+
+  it("create_listing: rejected at price 0 and at qty 0", async () => {
+    await expectError("InvalidPrice", () => createListing(3, 0n));
+    await expectError("InvalidQty", () => createListing(3, PRICE, 0));
+  });
+
+  it("update_config: rejected for anyone but the config authority", async () => {
+    await expectError("ConstraintHasOne", () =>
+      program.methods
+        .updateConfig(null, null, null, null, true)
+        .accounts({ config: configPda, authority: seller.publicKey })
+        .signers([seller])
+        .rpc()
+    );
+    const cfg = await (program.account as any).config.fetch(configPda);
+    assert.isFalse(cfg.paused, "market was not paused by the rejected update");
   });
 
   it("fee_bps = 0: seller receives the entire price and the fee account is untouched", async () => {
