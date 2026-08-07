@@ -5,7 +5,7 @@ use anchor_spl::token_interface::{
     TransferChecked,
 };
 
-declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
+declare_id!("J26zGhTfnDVqNZcRwerK5Aen7BXyGnjjxkG9CXkbSCRv");
 
 // Deadlines clamp to the event: delivery must complete 2h before doors,
 // inspection can run at most 6h past doors. See design doc §5.3.

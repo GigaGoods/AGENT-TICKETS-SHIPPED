@@ -5,10 +5,10 @@ anchor_version = "0.31.1"
 resolution = true
 skip-lint = false
 
-[programs.localnet]
-agent_tickets_escrow = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
-
 [programs.devnet]
+agent_tickets_escrow = "J26zGhTfnDVqNZcRwerK5Aen7BXyGnjjxkG9CXkbSCRv"
+
+[programs.localnet]
 agent_tickets_escrow = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
 
 [registry]
