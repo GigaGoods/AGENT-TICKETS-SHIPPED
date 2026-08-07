@@ -1,0 +1,13 @@
+{
+  "name": "agent-tickets",
+  "version": "0.1.0",
+  "description": "Peer-to-peer event-ticket marketplace with agent JSON API",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

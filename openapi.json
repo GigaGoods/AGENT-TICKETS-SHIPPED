@@ -1,0 +1,315 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Agent-Tickets API",
+    "version": "0.1.0",
+    "description": "Agent-first JSON API for listing and browsing peer-to-peer event tickets. Humans and AI agents use the same endpoints and see the same live inventory."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Local development"
+    }
+  ],
+  "paths": {
+    "/api/health": {
+      "get": {
+        "operationId": "getHealth",
+        "summary": "Check API availability",
+        "description": "Use before other calls to confirm the Agent-Tickets server is reachable.",
+        "responses": {
+          "200": {
+            "description": "Server is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["status", "version"],
+                  "properties": {
+                    "status": { "type": "string", "example": "ok" },
+                    "version": { "type": "string", "example": "0.1.0" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/listings": {
+      "get": {
+        "operationId": "listListings",
+        "summary": "Read live ticket inventory",
+        "description": "Returns all active ticket listings. Use when an agent or user needs to browse available tickets. Supports optional filters for event name, venue, and max price.",
+        "parameters": [
+          {
+            "name": "eventName",
+            "in": "query",
+            "description": "Case-insensitive substring match on event name",
+            "schema": { "type": "string" },
+            "example": "Breakpoint"
+          },
+          {
+            "name": "venue",
+            "in": "query",
+            "description": "Case-insensitive substring match on venue",
+            "schema": { "type": "string" },
+            "example": "Singapore"
+          },
+          {
+            "name": "maxPriceUsdc",
+            "in": "query",
+            "description": "Return only listings at or below this USDC price",
+            "schema": { "type": "number", "minimum": 0 },
+            "example": 100
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Max listings to return (1–100, default 50)",
+            "schema": { "type": "integer", "minimum": 1, "maximum": 100, "default": 50 }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "description": "Pagination cursor from a previous response's nextCursor",
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of active ticket listings",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ListingsResponse" },
+                "example": {
+                  "listings": [
+                    {
+                      "id": "550e8400-e29b-41d4-a716-446655440000",
+                      "eventName": "Solana Breakpoint",
+                      "eventDate": "2026-09-11T18:00:00.000Z",
+                      "venue": "Singapore Expo",
+                      "priceUsdc": 120,
+                      "ticketCount": 1,
+                      "status": "active",
+                      "listedBy": "agent",
+                      "createdAt": "2026-08-07T00:12:34.567Z"
+                    }
+                  ],
+                  "count": 1,
+                  "nextCursor": null
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/ValidationError" }
+        }
+      },
+      "post": {
+        "operationId": "createListing",
+        "summary": "Create a ticket listing",
+        "description": "Use when a user or agent wants to sell a ticket. Requires event name, date, venue, and USDC price. Returns the created listing with a server-generated id. Safe to retry with the same Idempotency-Key header.",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "Unique key to prevent duplicate listings on agent retries",
+            "schema": { "type": "string" },
+            "example": "agent-demo-001"
+          },
+          {
+            "name": "X-Listed-By",
+            "in": "header",
+            "description": "Set to 'agent' when an AI agent creates the listing",
+            "schema": { "type": "string", "enum": ["agent", "human"] }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateListingRequest" },
+              "example": {
+                "eventName": "Hackathon Finals",
+                "eventDate": "2026-08-10T19:00:00Z",
+                "venue": "Main Stage",
+                "priceUsdc": 25,
+                "ticketCount": 1
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Listing created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["listing"],
+                  "properties": {
+                    "listing": { "$ref": "#/components/schemas/Listing" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/ValidationError" },
+          "409": { "$ref": "#/components/responses/IdempotencyConflict" },
+          "415": { "$ref": "#/components/responses/UnsupportedMediaType" }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CreateListingRequest": {
+        "type": "object",
+        "required": ["eventName", "eventDate", "venue", "priceUsdc"],
+        "additionalProperties": false,
+        "properties": {
+          "eventName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "description": "Name of the event",
+            "example": "Hackathon Finals"
+          },
+          "eventDate": {
+            "type": "string",
+            "description": "ISO 8601 date or datetime",
+            "example": "2026-08-10T19:00:00Z"
+          },
+          "venue": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "description": "Venue name or location",
+            "example": "Main Stage"
+          },
+          "priceUsdc": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "description": "Asking price in USDC (max 2 decimal places)",
+            "example": 25
+          },
+          "ticketCount": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 1,
+            "description": "Number of tickets in this listing",
+            "example": 1
+          }
+        }
+      },
+      "Listing": {
+        "type": "object",
+        "required": [
+          "id",
+          "eventName",
+          "eventDate",
+          "venue",
+          "priceUsdc",
+          "ticketCount",
+          "status",
+          "listedBy",
+          "createdAt"
+        ],
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "eventName": { "type": "string" },
+          "eventDate": { "type": "string" },
+          "venue": { "type": "string" },
+          "priceUsdc": { "type": "number" },
+          "ticketCount": { "type": "integer", "minimum": 1 },
+          "status": { "type": "string", "enum": ["active"] },
+          "listedBy": { "type": "string", "enum": ["agent", "human"] },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "ListingsResponse": {
+        "type": "object",
+        "required": ["listings", "count", "nextCursor"],
+        "properties": {
+          "listings": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Listing" }
+          },
+          "count": { "type": "integer", "minimum": 0 },
+          "nextCursor": { "type": ["string", "null"], "format": "uuid" }
+        }
+      },
+      "ProblemDetails": {
+        "type": "object",
+        "required": ["type", "title", "status", "detail", "errorCode", "retryable", "requestId"],
+        "properties": {
+          "type": { "type": "string", "format": "uri" },
+          "title": { "type": "string" },
+          "status": { "type": "integer" },
+          "detail": { "type": "string" },
+          "errorCode": { "type": "string" },
+          "retryable": { "type": "boolean" },
+          "requestId": { "type": "string" },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["field", "code", "message"],
+              "properties": {
+                "field": { "type": "string" },
+                "code": { "type": "string" },
+                "message": { "type": "string" },
+                "received": {},
+                "expected": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "ValidationError": {
+        "description": "Validation failed — fix the listed fields and retry",
+        "content": {
+          "application/problem+json": {
+            "schema": { "$ref": "#/components/schemas/ProblemDetails" },
+            "example": {
+              "type": "https://agent-tickets.dev/errors/validation",
+              "title": "Validation Failed",
+              "status": 400,
+              "detail": "One or more fields failed validation.",
+              "errorCode": "VALIDATION_FAILED",
+              "retryable": false,
+              "requestId": "req_7f3a9c2b",
+              "errors": [
+                {
+                  "field": "priceUsdc",
+                  "code": "INVALID_RANGE",
+                  "message": "priceUsdc must be greater than 0",
+                  "received": -10,
+                  "expected": "number > 0"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "IdempotencyConflict": {
+        "description": "Same Idempotency-Key used with a different body",
+        "content": {
+          "application/problem+json": {
+            "schema": { "$ref": "#/components/schemas/ProblemDetails" }
+          }
+        }
+      },
+      "UnsupportedMediaType": {
+        "description": "Content-Type must be application/json",
+        "content": {
+          "application/problem+json": {
+            "schema": { "$ref": "#/components/schemas/ProblemDetails" }
+          }
+        }
+      }
+    }
+  }
+}
