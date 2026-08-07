@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Agent-Tickets — Exchange Demo</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="../">
+      <span class="brand-mark">A</span>
+      <span>Agent<span>Tickets</span></span>
+    </a>
+    <div class="demo-badge"><span></span> Interactive demo</div>
+    <div class="account-switcher">
+      <span class="switch-label">Viewing as</span>
+      <button class="account-button" id="accountButton" aria-expanded="false">
+        <span class="avatar seller-avatar" id="accountAvatar">EV</span>
+        <span class="account-copy"><strong id="accountName">Elena V.</strong><small id="accountRole">Seller account</small></span>
+        <span class="chevron">⌄</span>
+      </button>
+      <div class="account-menu" id="accountMenu" hidden>
+        <button class="account-option active" data-account="seller">
+          <span class="avatar seller-avatar">EV</span>
+          <span><strong>Elena V.</strong><small>Seller · 2 tickets</small></span>
+          <span class="check">✓</span>
+        </button>
+        <button class="account-option" data-account="buyer">
+          <span class="avatar buyer-avatar">JM</span>
+          <span><strong>Jordan M.</strong><small>Buyer · 620 demo USDC</small></span>
+          <span class="check">✓</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="app-shell">
+    <section class="intro">
+      <div>
+        <p class="eyebrow">P2P EXCHANGE SANDBOX</p>
+        <h1 id="pageTitle">Verify and list your ticket</h1>
+        <p id="pageSubtitle">Upload proof of purchase. We’ll compare it with your listing before it reaches the marketplace.</p>
+      </div>
+      <button class="text-button" id="resetDemo">↻ Reset demo</button>
+    </section>
+
+    <nav class="progress" aria-label="Exchange progress">
+      <div class="progress-step active" data-step="1"><span>1</span><div><strong>Verify</strong><small>Proof of purchase</small></div></div>
+      <div class="progress-line"></div>
+      <div class="progress-step" data-step="2"><span>2</span><div><strong>List</strong><small>Publish ticket</small></div></div>
+      <div class="progress-line"></div>
+      <div class="progress-step" data-step="3"><span>3</span><div><strong>Fund</strong><small>Demo payment</small></div></div>
+      <div class="progress-line"></div>
+      <div class="progress-step" data-step="4"><span>4</span><div><strong>Exchange</strong><small>Transfer ticket</small></div></div>
+    </nav>
+
+    <div class="demo-notice">
+      <span>◇</span>
+      <p><strong>Hybrid demo</strong> — Document analysis is real and uses Gemini. Listings, balances, and payments remain simulated; no ticket or funds move.</p>
+    </div>
+
+    <section class="seller-view" id="sellerView">
+      <div class="content-grid">
+        <div class="card">
+          <div class="card-header">
+            <div><p class="step-label">STEP 1 OF 2</p><h2>Proof of purchase</h2></div>
+            <span class="status neutral" id="verifyStatus">Not submitted</span>
+          </div>
+          <p class="card-description">First update the listing details to match your ticket. Then upload a redacted order confirmation, receipt, or mobile ticket.</p>
+          <label class="upload-zone" id="uploadZone">
+            <input type="file" id="documentInput" accept=".png,.jpg,.jpeg,.webp,.pdf">
+            <span class="upload-icon">⇧</span>
+            <strong id="uploadTitle">Drop your document here</strong>
+            <span id="uploadHint">or click to browse · PNG, JPG, WEBP or PDF · max 8 MB</span>
+          </label>
+          <div class="privacy-note"><span>⌾</span><p><strong>Redact before upload</strong><br>Hide QR codes, barcodes, payment data, email, and address. The file is sent to Google Gemini and is not stored by this app.</p></div>
+          <button class="primary-button full" id="verifyButton" disabled>Verify document <span>→</span></button>
+          <div class="verification-result" id="verificationResult" hidden>
+            <div class="result-heading"><span class="success-icon" id="resultIcon">✓</span><div><strong id="resultTitle">Purchase evidence matched</strong><small id="resultConfidence">Gemini confidence</small></div></div>
+            <div class="match-grid">
+              <span>Event <strong id="eventMatch">—</strong></span>
+              <span>Date <strong id="dateMatch">—</strong></span>
+              <span>Venue <strong id="venueMatch">—</strong></span>
+            </div>
+            <p class="result-extracted" id="resultExtracted"></p>
+            <button class="review-button" id="manualApproveButton" type="button" hidden>Approve for this demo only</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div><p class="step-label">STEP 2 OF 2</p><h2>Listing details</h2></div><span class="status neutral" id="listingStatus">Draft</span></div>
+          <form id="listingForm">
+            <label>Event name<input id="eventName" value="(A-Z) Elliot Schooling &amp; Liam Palmer, L.P. Rhythm, Miguelle &amp; Tons + Ranger Trucco" required></label>
+            <div class="form-row">
+              <label>Event date<input id="eventDate" type="date" value="2026-08-08" required></label>
+              <label>Venue<input id="venue" value="Club Space Miami" required></label>
+            </div>
+            <div class="form-row">
+              <label>Section / seats<input id="seats" value="GA"></label>
+              <label>Quantity<select id="quantity"><option selected>1</option><option>2</option><option>3</option><option>4</option></select></label>
+            </div>
+            <label>Price per ticket<div class="price-input"><input id="price" type="number" value="185" min="1"><span>demo USDC</span></div></label>
+            <button class="primary-button full" id="publishButton" type="submit" disabled>Verify before publishing</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section class="buyer-view" id="buyerView" hidden>
+      <div class="buyer-grid">
+        <div>
+          <div class="section-heading"><div><p class="eyebrow">LIVE INVENTORY</p><h2>Verified ticket listing</h2></div><span class="status success">Seller verified</span></div>
+          <article class="ticket-card">
+            <div class="ticket-art"><span>SEP</span><strong>12</strong><small>NEW YORK</small></div>
+            <div class="ticket-info">
+              <div><span class="verified-pill">✓ DOCUMENT MATCHED</span><h3 id="buyerEventName">Bad Bunny — DeBÍ TiRAR MáS FOToS Tour</h3><p id="buyerVenue">Madison Square Garden · Sep 12, 2026</p></div>
+              <div class="ticket-meta"><span><small>SEATS</small><strong id="buyerSeats">Section 115 · Row 8 · Seats 3–4</strong></span><span><small>SELLER</small><strong>Elena V. ★ 4.9</strong></span></div>
+            </div>
+          </article>
+        </div>
+        <aside class="card checkout-card">
+          <p class="step-label">DEMO CHECKOUT</p>
+          <h2>Fund the exchange</h2>
+          <div class="balance"><span>Jordan’s demo balance</span><strong>620.00 <small>USDC</small></strong></div>
+          <div class="receipt-row"><span><span id="buyerQuantity">2</span> tickets × <span id="buyerUnitPrice">185</span></span><strong id="subtotal">370.00 USDC</strong></div>
+          <div class="receipt-row"><span>Platform fee <small>(demo)</small></span><strong>0.00 USDC</strong></div>
+          <div class="receipt-total"><span>Total</span><strong id="total">370.00 USDC</strong></div>
+          <button class="primary-button full" id="fundButton">Fund demo exchange <span>→</span></button>
+          <p class="checkout-disclaimer">No wallet is connected and no real payment will occur.</p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="exchange-view" id="exchangeView" hidden>
+      <div class="exchange-success">
+        <div class="large-success">✓</div>
+        <p class="eyebrow">EXCHANGE #AT-1048</p>
+        <h2>Demo funds secured</h2>
+        <p>Jordan’s pseudo-payment is reserved. Elena can now transfer the ticket before the demo funds are released.</p>
+        <div class="exchange-amount"><small>RESERVED BALANCE</small><strong id="reservedAmount">370.00 demo USDC</strong></div>
+      </div>
+      <div class="exchange-layout">
+        <div class="card">
+          <h3>Exchange timeline</h3>
+          <ol class="timeline">
+            <li class="complete"><span>✓</span><div><strong>Seller proof verified</strong><small>Gemini verification simulated</small></div></li>
+            <li class="complete"><span>✓</span><div><strong>Buyer funded exchange</strong><small>Demo USDC reserved</small></div></li>
+            <li class="current"><span>3</span><div><strong>Awaiting ticket transfer</strong><small>Seller sends ticket to buyer</small></div></li>
+            <li><span>4</span><div><strong>Buyer confirms receipt</strong><small>Future: release escrow on Solana</small></div></li>
+          </ol>
+        </div>
+        <div class="card future-card">
+          <span class="solana-mark">S</span>
+          <p class="step-label">NEXT ITERATION</p>
+          <h3>Ready for the Solana layer</h3>
+          <p>This demo models the states the future program will enforce: funded, transferred, confirmed, and released.</p>
+          <ul><li>USDC escrow vault</li><li>Transfer confirmation</li><li>Timeout and refund paths</li></ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <footer><span>AgentTickets demo · No real tickets or payments</span><a href="../">Back to home</a></footer>
+  <script src="../app.js"></script>
+</body>
+</html>

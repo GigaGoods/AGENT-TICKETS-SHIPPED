@@ -5,6 +5,10 @@
   "description": "Peer-to-peer event ticket marketplace on Solana. On-chain escrow replaces the 20-30% resale fee, and an MCP server lets AI agents buy tickets autonomously.",
   "private": true,
   "license": "UNLICENSED",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
   "keywords": [
     "solana",
     "anchor",
@@ -22,10 +26,13 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
+    "test": "node --test",
     "anchor:build": "anchor build",
     "anchor:test": "anchor test",
     "anchor:deploy": "anchor deploy --provider.cluster devnet",
-    "mcp": "node mcp/server.js"
+    "mcp": "node mcp/server.js",
+    "server": "node server.js",
+    "verify:doc": "node examples/verify-document.js"
   },
   "dependencies": {
     "@coral-xyz/anchor": "^0.32.1",
