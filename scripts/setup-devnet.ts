@@ -78,12 +78,12 @@ function isRateLimited(err: unknown): boolean {
 interface AddressBook {
   cluster: string;
   rpcUrl: string;
-  usdcMint: string;
-  usdcDecimals: number;
-  usdcMintAuthority: string;
+  testUsdcMint: string;
+  testUsdcDecimals: number;
+  testUsdcMintAuthority: string;
   wallets: Record<string, { pubkey: string; usdcAta: string }>;
   updatedAt: string;
-  /** Keys owned by sibling scripts (programId, _note, …) are preserved as-is. */
+  /** Keys owned by sibling scripts (usdcMint, programId, _note, …) preserved as-is. */
   [key: string]: unknown;
 }
 
@@ -285,6 +285,26 @@ function clusterLabel(url: string): string {
   return "unknown";
 }
 
+/**
+ * A committable RPC URL: never the real endpoint, which may carry an API key in
+ * its query string (Helius, QuickNode, …). Record the canonical public URL for
+ * the cluster so the address book is portable and secret-free.
+ */
+function publicRpcUrl(url: string): string {
+  switch (clusterLabel(url)) {
+    case "devnet":
+      return "https://api.devnet.solana.com";
+    case "testnet":
+      return "https://api.testnet.solana.com";
+    case "mainnet-beta":
+      return "https://api.mainnet-beta.solana.com";
+    case "localnet":
+      return url.replace(/\?.*$/, ""); // strip any query, keep the local port
+    default:
+      return url.replace(/\?.*$/, "");
+  }
+}
+
 /** Rent for one mint + one ATA per wallet, plus a fee buffer. */
 async function payerRequirementLamports(connection: Connection): Promise<number> {
   const [mintRent, ataRent] = await Promise.all([
@@ -361,11 +381,16 @@ async function main() {
   const sameCluster =
     typeof book.rpcUrl === "string" && clusterLabel(book.rpcUrl) === clusterLabel(RPC_URL);
 
+  // Our mint lives under `testUsdcMint`, NOT `usdcMint`. Sibling scripts already
+  // use `usdcMint` for the shared devnet USDC-Dev faucet mint (4zMMC9…), which
+  // nobody here has mint authority over; overwriting it would make the file
+  // self-contradict. See the note we write below.
   log("\nTest USDC mint:");
+  const recordedTestMint = sameCluster ? book.testUsdcMint : undefined;
   const mint = await ensureMint(
     connection,
     payer.keypair,
-    sameCluster ? book.usdcMint : undefined
+    typeof recordedTestMint === "string" ? recordedTestMint : undefined
   );
 
   log("\nToken accounts:");
@@ -408,14 +433,15 @@ async function main() {
   const next = {
     ...book,
     cluster: clusterLabel(RPC_URL),
-    rpcUrl: RPC_URL,
-    usdcMint: mint.toBase58(),
-    usdcDecimals: USDC_DECIMALS,
-    usdcMintAuthority: payer.keypair.publicKey.toBase58(),
-    _usdcMintNote:
-      "usdcMint is the local 6-decimal TEST mint created by setup-devnet.ts " +
-      "(authority = the first team wallet), not the shared devnet USDC-Dev faucet mint. " +
-      "The team wallets hold this mint, so initialize_config must point Config.usdc_mint at it.",
+    rpcUrl: publicRpcUrl(RPC_URL),
+    testUsdcMint: mint.toBase58(),
+    testUsdcDecimals: USDC_DECIMALS,
+    testUsdcMintAuthority: payer.keypair.publicKey.toBase58(),
+    _testUsdcMintNote:
+      "testUsdcMint is the 6-decimal TEST mint created by setup-devnet.ts " +
+      "(authority = the first team wallet). The team wallets in `wallets` hold THIS mint, " +
+      "not the shared devnet USDC-Dev mint in `usdcMint`. initialize_config MUST set " +
+      "Config.usdc_mint = testUsdcMint, or lock_purchase fails the InvalidMint constraint.",
     wallets: walletBook,
     updatedAt: new Date().toISOString(),
   };
