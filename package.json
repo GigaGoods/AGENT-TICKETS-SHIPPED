@@ -9,6 +9,7 @@
   },
   "scripts": {
     "start": "node server.js",
+    "dev": "node --watch server.js",
     "test": "node --test tests/google-vision.test.js tests/validator.test.js",
     "test:escrow": "anchor test",
     "test:edge": "ts-mocha -p ./tsconfig.json -t 1000000 tests/escrow-edge.test.ts",
