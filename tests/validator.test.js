@@ -89,7 +89,7 @@ test('rejects an image that is not recognized as a ticket', () => {
   assert.equal(result.status, 'rejected');
 });
 
-test('sends image-quality and authenticity concerns to human review', () => {
+test('reports image-quality and authenticity concerns without blocking the listing', () => {
   const listing = {
     eventName: 'Ranger Trucco',
     eventDate: '2026-09-12',
@@ -112,7 +112,10 @@ test('sends image-quality and authenticity concerns to human review', () => {
     ['suspicious_editing']
   );
 
-  assert.equal(blurry.status, 'needs_review');
-  assert.equal(suspicious.status, 'needs_review');
+  // Loose-ticket policy: soft signals are surfaced but never block — a real
+  // ticket photographed badly still verifies.
+  assert.equal(blurry.status, 'verified');
+  assert.equal(suspicious.status, 'verified');
+  assert.match(blurry.reviewReasons[0], /blurry_image/);
   assert.match(suspicious.reviewReasons[0], /suspicious_editing/);
 });
