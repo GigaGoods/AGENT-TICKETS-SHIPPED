@@ -37,10 +37,10 @@
 <div><span class="badge badge-yellow">Human front door</span></div>
 <h2>List a ticket</h2>
 <form id="form" novalidate>
-<div class="field" data-f="event"><label for="f-event">Event name</label><input id="f-event" name="event" placeholder="Silverline Tour" autocomplete="off"><span class="error">Event name is required.</span></div>
-<div class="field" data-f="date"><label for="f-date">Event date</label><input id="f-date" name="date" type="date"><span class="error">A valid date is required.</span></div>
-<div class="field" data-f="venue"><label for="f-venue">Venue</label><input id="f-venue" name="venue" placeholder="The Anthem, Washington DC" autocomplete="off"><span class="error">Venue is required.</span></div>
-<div class="field" data-f="price"><label for="f-price">Price (USDC)</label><input id="f-price" name="price" type="number" min="1" step="1" placeholder="145"><span class="error">Price must be a number greater than 0.</span></div>
+<div class="field" data-f="event"><label for="f-event">Event name</label><input id="f-event" name="event" value="(A-Z) Elliot Schooling &amp; Liam Palmer, L.P. Rhythm, Miguelle &amp; Tons + Ranger Trucco" placeholder="Silverline Tour" autocomplete="off"><span class="error">Event name is required.</span></div>
+<div class="field" data-f="date"><label for="f-date">Event date</label><input id="f-date" name="date" type="date" value="2026-08-08"><span class="error">A valid date is required.</span></div>
+<div class="field" data-f="venue"><label for="f-venue">Venue</label><input id="f-venue" name="venue" value="Club Space Miami" placeholder="The Anthem, Washington DC" autocomplete="off"><span class="error">Venue is required.</span></div>
+<div class="field" data-f="price"><label for="f-price">Price (USDC)</label><input id="f-price" name="price" type="number" min="1" step="1" value="185" placeholder="145"><span class="error">Price must be a number greater than 0.</span></div>
 <button class="btn btn-primary" type="submit">Publish listing</button>
 <span class="hint">Goes live instantly for everyone, including agents reading GET /api/listings. Agents list through the <a href="api.html">JSON API</a>.</span>
 </form>
