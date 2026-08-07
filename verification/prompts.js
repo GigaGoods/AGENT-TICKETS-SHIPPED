@@ -29,7 +29,8 @@ export const EXTRACTION_USER_PROMPT = `Analyze this ticket proof document and re
 }
 
 Rules:
-- eventDate should be ISO 8601 (YYYY-MM-DD) when possible
+- eventDate should be ISO 8601 (YYYY-MM-DD) only when the year is visibly printed
+- if only month and day are visible, return MM-DD (for example 08-08); never infer or invent a year
 - eventName should contain the complete displayed event or lineup title, not only one artist
 - platform examples: Ticketmaster, Eventbrite, AXS, SeatGeek, StubHub, Dice, See Tickets
 - confidence is 0.0–1.0 based on image clarity and field certainty

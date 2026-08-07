@@ -1,36 +1,72 @@
 {
   "name": "agent-tickets",
+  "productName": "Agent Tickets",
   "version": "0.1.0",
   "private": true,
-  "description": "P2P event ticket marketplace with agent API, document verification, and on-chain USDC escrow",
+  "description": "Peer-to-peer event ticket marketplace on Solana. On-chain escrow replaces the 20-30% resale fee, and an MCP server lets AI agents buy tickets autonomously.",
+  "license": "UNLICENSED",
   "type": "module",
   "engines": {
     "node": ">=18"
   },
+  "keywords": [
+    "solana",
+    "anchor",
+    "escrow",
+    "tickets",
+    "marketplace",
+    "usdc",
+    "mcp",
+    "nextjs"
+  ],
   "scripts": {
-    "start": "node server.js",
-    "dev": "node --watch server.js",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "node --test tests/google-vision.test.js tests/validator.test.js",
-    "test:escrow": "anchor test",
-    "test:edge": "ts-mocha -p ./tsconfig.json -t 1000000 tests/escrow-edge.test.ts",
+    "anchor:build": "anchor build",
+    "anchor:test": "anchor test",
+    "anchor:deploy": "anchor deploy --provider.cluster devnet",
+    "mcp": "node mcp/server.js",
     "verify:doc": "node examples/verify-document.js",
+    "test:escrow": "anchor test",
+    "test:edge": "ts-mocha -p ./tsconfig.escrow.json -t 1000000 tests/escrow-edge.test.ts",
     "verify:track-a": "node scripts/verify-track-a.mjs",
     "verify:track-a:full": "node scripts/verify-track-a.mjs --tests",
     "crank": "ts-node scripts/crank.ts",
-    "typecheck": "tsc --noEmit -p tsconfig.json",
-    "setup:devnet": "ts-node scripts/setup-devnet.ts"
+    "setup:devnet": "ts-node scripts/setup-devnet.ts",
+    "serve:api": "node server.js",
+    "serve:api:watch": "node --watch server.js"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.32.1",
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "@solana/spl-token": "^0.4.15",
+    "@solana/wallet-adapter-react": "^0.15.39",
+    "@solana/wallet-adapter-react-ui": "^0.9.39",
+    "@solana/wallet-adapter-wallets": "^0.19.38",
+    "@solana/web3.js": "^1.98.4",
+    "next": "^16.3.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
   },
   "devDependencies": {
+    "@types/node": "^22.5.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "eslint": "^9.0.0",
+    "eslint-config-next": "^16.3.0",
+    "typescript": "^5.6.2",
     "@coral-xyz/anchor": "^0.31.1",
     "@solana/spl-token": "^0.4.9",
     "@solana/web3.js": "^1.98.0",
     "@types/chai": "^4.3.16",
     "@types/mocha": "^10.0.7",
-    "@types/node": "^22.5.0",
     "chai": "^4.4.1",
     "mocha": "^10.7.0",
     "ts-mocha": "^10.0.0",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.6.2"
+    "ts-node": "^10.9.2"
   }
 }

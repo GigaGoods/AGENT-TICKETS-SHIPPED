@@ -1,8 +1,33 @@
-.env
+# dependencies
 node_modules/
+
+# next.js
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+
+# build output
+dist/
+
+# env — only .env.example belongs in git
+.env*
+!.env.example
+
+# document verification uploads
 uploads/
+
+# misc
+*.log
+.vercel/
+.DS_Store
+.claude
+.firecrawl/
+.prototype/
+.prototype
+
+# anchor / solana
 target/
 .anchor/
 test-ledger/
-.DS_Store
 *.log

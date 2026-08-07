@@ -114,6 +114,40 @@
   font-size: 13px;
   color: var(--stone);
 }
+.checking {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid var(--blue);
+  border-radius: var(--r-lg);
+  background: var(--lavender);
+  color: var(--ink);
+}
+.checking div {
+  display: grid;
+  gap: 2px;
+}
+.checking strong {
+  font-size: 14px;
+  font-weight: 600;
+}
+.checking div span {
+  color: var(--slate);
+  font-size: 12px;
+}
+.spinner {
+  width: 28px;
+  height: 28px;
+  flex: none;
+  border: 3px solid color-mix(in srgb, var(--blue) 22%, transparent);
+  border-top-color: var(--blue);
+  border-radius: 50%;
+  animation: verify-spin 800ms linear infinite;
+}
+@keyframes verify-spin {
+  to { transform: rotate(360deg); }
+}
 .result {
   display: grid;
   gap: 8px;
@@ -139,7 +173,18 @@
   display: grid;
   gap: 2px;
   font-size: 13px;
-  font-weight: 500;
+}
+.matchGrid strong {
+  font-size: 13px;
+  font-weight: 600;
+}
+.matchGrid em {
+  margin-top: 3px;
+  color: var(--steel);
+  font-size: 10px;
+  font-style: normal;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
 }
 .matchGrid small {
   font-size: 10px;

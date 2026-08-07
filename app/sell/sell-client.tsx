@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState, type DragEvent } from "react";
+import { useEffect, useRef, useState, type DragEvent } from "react";
 import { addListing, validateListing, formatEventDate, type Listing } from "@/lib/store";
 import {
   MAX_DOCUMENT_BYTES,
@@ -22,7 +22,12 @@ const FIELDS = [
 type FieldName = (typeof FIELDS)[number]["name"];
 type FormValues = Record<FieldName, string>;
 
-const EMPTY_VALUES: FormValues = { event: "", date: "", venue: "", price: "" };
+const DEFAULT_VALUES: FormValues = {
+  event: "(A-Z) Elliot Schooling & Liam Palmer, L.P. Rhythm, Miguelle & Tons + Ranger Trucco",
+  date: "2026-08-08",
+  venue: "Club Space Miami",
+  price: "185",
+};
 
 // Proof-of-purchase verification states. "approved" is the demo-only manual
 // override for needs_review results; "unavailable" means the server has no
@@ -58,7 +63,7 @@ const STEPS = [
 
 export function SellClient() {
   const [step, setStep] = useState<1 | 2 | 3>(1);
-  const [values, setValues] = useState<FormValues>(EMPTY_VALUES);
+  const [values, setValues] = useState<FormValues>(DEFAULT_VALUES);
   const [invalid, setInvalid] = useState<ReadonlySet<string>>(new Set());
   const [published, setPublished] = useState<Listing | null>(null);
 
@@ -67,9 +72,16 @@ export function SellClient() {
   const [result, setResult] = useState<VerificationResult | null>(null);
   const [verifyNote, setVerifyNote] = useState<string | null>(null);
   const [dragover, setDragover] = useState(false);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
 
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (verifyState !== "checking") return;
+    const timer = setInterval(() => setElapsedSeconds((seconds) => seconds + 1), 1000);
+    return () => clearInterval(timer);
+  }, [verifyState]);
 
   function showToast(message: string) {
     setToast(message);
@@ -118,8 +130,9 @@ export function SellClient() {
 
   async function onVerify() {
     if (!file || verifyState === "checking") return;
+    setElapsedSeconds(0);
     setVerifyState("checking");
-    setVerifyNote(null);
+    setVerifyNote("Uploading securely and checking with Gemini… This usually takes 10–30 seconds.");
     const outcome = await verifyDocument(file, {
       eventName: values.event,
       eventDate: values.date,
@@ -144,12 +157,15 @@ export function SellClient() {
     setResult(verification);
     if (verification.status === "verified") {
       setVerifyState("verified");
+      setVerifyNote(`Verification completed with ${verification.model ?? "Gemini"}.`);
       showToast("Gemini matched your document to the listing. Ready to publish.");
     } else if (verification.status === "needs_review") {
       setVerifyState("review");
+      setVerifyNote("Gemini finished. Review the explanation below before continuing.");
       showToast(verification.reviewReasons[0] ?? "Ticket detected — manual review required.");
     } else {
       setVerifyState("rejected");
+      setVerifyNote("Gemini finished, but the document did not pass verification.");
       showToast(verification.rejectionReason ?? "The document did not match the listing details.");
     }
   }
@@ -170,7 +186,7 @@ export function SellClient() {
 
   function reset() {
     setStep(1);
-    setValues(EMPTY_VALUES);
+    setValues(DEFAULT_VALUES);
     setInvalid(new Set());
     setPublished(null);
     setFile(null);
@@ -282,6 +298,18 @@ export function SellClient() {
                 one check and is not stored.
               </span>
 
+              {verifyState === "checking" && (
+                <div className={styles.checking} role="status" aria-live="polite">
+                  <span className={styles.spinner} aria-hidden="true" />
+                  <div>
+                    <strong>Gemini is analyzing your ticket</strong>
+                    <span>
+                      Uploading, reading ticket fields, and matching the listing · {elapsedSeconds}s
+                    </span>
+                  </div>
+                </div>
+              )}
+
               {result && verifyState !== "checking" && (
                 <div className={styles.result}>
                   <strong className={styles.resultTitle}>
@@ -310,7 +338,12 @@ export function SellClient() {
                       return (
                         <span key={fieldName}>
                           <small>{label}</small>
-                          {match?.matched ? "Matched" : (match?.reason ?? "Mismatch")}
+                          <strong>{match?.matched ? "Matched" : (match?.reason ?? "Mismatch")}</strong>
+                          <em>
+                            Ticket: {match?.actual || "not found"}
+                            <br />
+                            Listing: {match?.expected || "not provided"}
+                          </em>
                         </span>
                       );
                     })}
@@ -340,7 +373,8 @@ export function SellClient() {
                 <button
                   className="btn btn-secondary"
                   type="button"
-                  onClick={onVerify}
+                  onClick={() => void onVerify()}
+                  aria-busy={verifyState === "checking"}
                   disabled={!file || ["checking", "verified", "approved", "unavailable"].includes(verifyState)}
                 >
                   {verifyLabel}
