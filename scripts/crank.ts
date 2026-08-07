@@ -35,36 +35,17 @@ import {
   TOKEN_2022_PROGRAM_ID,
   getAssociatedTokenAddressSync,
 } from "@solana/spl-token";
+import {
+  isBenignRace,
+  selectDue,
+  type OrderAccount,
+} from "./crank-core";
 
 const REPO_ROOT = path.resolve(__dirname, "..");
 const IDL_PATH = path.join(REPO_ROOT, "target", "idl", "agent_tickets_escrow.json");
 const ADDRESSES_PATH = path.join(__dirname, "devnet-addresses.json");
 
 const DEFAULT_INTERVAL_MS = 60_000;
-
-type OrderStateName =
-  | "locked"
-  | "delivered"
-  | "released"
-  | "refunded"
-  | "disputed"
-  | "arbiterResolved";
-
-/** Decoded Order account, as Anchor hands it back. */
-interface OrderAccount {
-  listing: PublicKey;
-  buyer: PublicKey;
-  seller: PublicKey;
-  amount: anchor.BN;
-  feeBps: number;
-  state: Record<string, unknown>;
-  lockedTs: anchor.BN;
-  deliveryDeadline: anchor.BN;
-  inspectionDeadline: anchor.BN;
-  arbiter: PublicKey;
-  attestation: PublicKey;
-  bump: number;
-}
 
 interface ConfigAccount {
   authority: PublicKey;
@@ -155,10 +136,6 @@ function buildProgram(
 
 // ---------- helpers ----------
 
-function stateOf(order: OrderAccount): OrderStateName {
-  return Object.keys(order.state)[0] as OrderStateName;
-}
-
 /**
  * The program compares against the on-chain Clock, not our wall clock. Use the
  * cluster's block time so we never fire a tx a few seconds early and eat a
@@ -173,32 +150,6 @@ async function chainNow(connection: Connection): Promise<number> {
     /* fall through */
   }
   return Math.floor(Date.now() / 1000);
-}
-
-/**
- * Races we expect to lose sometimes: another crank (or the buyer/seller acting
- * for themselves) settled the order between our getProgramAccounts snapshot and
- * our tx landing. The order + vault are closed by then, so Anchor's account
- * resolution or the program's own state check rejects us. That is a no-op, not
- * an incident.
- */
-function isBenignRace(err: unknown): string | null {
-  const msg = (err instanceof Error ? err.message : String(err)) + JSON.stringify(
-    (err as { logs?: string[] })?.logs ?? []
-  );
-  const benign: Array<[RegExp, string]> = [
-    [/AccountNotInitialized|3012/, "order/vault already closed"],
-    [/Account does not exist|could not find account/i, "account already closed"],
-    [/AccountOwnedByWrongProgram|3007/, "account already closed"],
-    [/InvalidState|Order is not in a valid state/, "state changed under us"],
-    [/DeadlineNotReached|Deadline has not been reached/, "deadline not reached on-chain yet"],
-    [/already been processed|AlreadyProcessed/i, "duplicate tx, already landed"],
-    [/ConstraintSeeds|2006/, "order pda mismatch (already closed/reused)"],
-  ];
-  for (const [re, reason] of benign) {
-    if (re.test(msg)) return reason;
-  }
-  return null;
 }
 
 // ---------- the crank ----------
@@ -258,12 +209,7 @@ class Crank {
       account: OrderAccount;
     }>;
 
-    const due = orders.filter(({ account }) => {
-      const state = stateOf(account);
-      if (state === "locked") return now > account.deliveryDeadline.toNumber();
-      if (state === "delivered") return now > account.inspectionDeadline.toNumber();
-      return false;
-    });
+    const due = selectDue(orders, now);
 
     log(`scanned ${orders.length} order(s), ${due.length} due`, { chainNow: now });
 
@@ -271,10 +217,7 @@ class Crank {
     let failed = 0;
     let skipped = 0;
 
-    for (const { publicKey, account } of due) {
-      const state = stateOf(account);
-      const action = state === "locked" ? "timeout_refund" : "timeout_release";
-
+    for (const { pubkey: publicKey, account, state, action } of due) {
       if (this.dryRun) {
         log(`DRY RUN would ${action}`, {
           order: publicKey.toBase58(),
@@ -286,7 +229,7 @@ class Crank {
 
       try {
         const sig =
-          state === "locked"
+          action === "timeout_refund"
             ? await this.timeoutRefund(publicKey, account, config)
             : await this.timeoutRelease(publicKey, account, config);
         settled++;
