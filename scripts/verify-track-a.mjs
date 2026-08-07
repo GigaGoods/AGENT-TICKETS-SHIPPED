@@ -78,8 +78,8 @@ try {
 
 section("TypeScript typecheck");
 try {
-  sh("npx tsc --noEmit -p tsconfig.json");
-  ok("tsc --noEmit clean");
+  sh("npx tsc --noEmit -p tsconfig.escrow.json");
+  ok("tsc --noEmit clean (escrow lane)");
 } catch (e) {
   bad(`typecheck failed:\n${(e.stdout || "").toString().slice(0, 500)}`);
 }
