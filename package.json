@@ -7,7 +7,9 @@
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "setup:devnet": "ts-node scripts/setup-devnet.ts",
     "test": "anchor test",
-    "test:edge": "ts-mocha -p ./tsconfig.json -t 1000000 tests/escrow-edge.test.ts"
+    "test:edge": "ts-mocha -p ./tsconfig.json -t 1000000 tests/escrow-edge.test.ts",
+    "verify:track-a": "node scripts/verify-track-a.mjs",
+    "verify:track-a:full": "node scripts/verify-track-a.mjs --tests"
   },
   "devDependencies": {
     "@coral-xyz/anchor": "^0.31.1",
