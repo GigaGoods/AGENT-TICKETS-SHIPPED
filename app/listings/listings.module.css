@@ -1,0 +1,82 @@
+.page {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 48px;
+  align-items: start;
+  padding: 64px 0 96px;
+}
+.pageHead {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+.liveDot {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--steel);
+}
+.liveDot i {
+  width: 8px;
+  height: 8px;
+  border-radius: 99px;
+  background: var(--green);
+  animation: pulse 2s ease infinite;
+}
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+.sell {
+  position: sticky;
+  top: 88px;
+  display: grid;
+  gap: 16px;
+}
+.sell form {
+  display: grid;
+  gap: 16px;
+}
+.sell h2 {
+  font-size: 22px;
+}
+.sell .hint {
+  font-size: 13px;
+  color: var(--stone);
+}
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 32px;
+  transform: translate(-50%, 16px);
+  background: var(--ink);
+  color: #fff;
+  border-radius: var(--r-full);
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 500;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 300ms ease;
+  z-index: 60;
+}
+.toast.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+@media (max-width: 960px) {
+  .page {
+    grid-template-columns: 1fr;
+  }
+  .sell {
+    position: static;
+    order: -1;
+  }
+}

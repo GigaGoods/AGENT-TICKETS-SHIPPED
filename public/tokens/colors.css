@@ -1,0 +1,68 @@
+/* Kempt color tokens.
+   Palette is intentionally narrow. White everywhere. Slate 900 for text and
+   primary actions. Emerald is the single brand accent. Amber is for stars only.
+   Do not introduce other accent colors. */
+
+:root {
+  /* ---- Base surface ---- */
+  --white: #ffffff;
+
+  /* ---- Slate scale (neutrals) ---- */
+  --slate-50:  #f8fafc;
+  --slate-100: #f1f5f9;
+  --slate-200: #e2e8f0;
+  --slate-300: #cbd5e1;
+  --slate-400: #94a3b8;
+  --slate-500: #64748b;
+  --slate-600: #475569;
+  --slate-700: #334155;
+  --slate-800: #1e293b;
+  --slate-900: #0f172a;
+
+  /* ---- Emerald (the single brand accent) ---- */
+  --emerald:        #059669; /* CTAs, highlights, success, badges */
+  --emerald-dark:   #047857; /* text on emerald tint, hover on emerald */
+  --emerald-tint:   #ecfdf5; /* gentle fills, pill backgrounds */
+  --emerald-border: #a7f3d0; /* accent borders, dividers on tint */
+  --emerald-deep:   #064e3b; /* darkest emerald text */
+
+  /* ---- Amber (stars only) ---- */
+  --amber: #fbbf24;
+
+  /* ===================================================================
+     Semantic aliases — reference these in components, not the raw scale.
+     =================================================================== */
+
+  /* Surfaces */
+  --surface-page:    var(--white);
+  --surface-card:    var(--white);
+  --surface-muted:   var(--slate-50);   /* section bands, hover rows, wells */
+  --surface-subtle:  var(--slate-100);  /* segmented tracks, secondary fills */
+  --surface-inverse: var(--slate-900);  /* dark CTA bands, inverse panels */
+  --surface-accent:  var(--emerald-tint);
+
+  /* Text */
+  --text-primary:    var(--slate-900);  /* headlines, body, UI labels */
+  --text-secondary:  var(--slate-700);  /* prose body, tertiary headings */
+  --text-muted:      var(--slate-500);  /* captions, secondary text */
+  --text-disabled:   var(--slate-400);  /* placeholder, disabled */
+  --text-inverse:    var(--white);      /* text on slate-900 / emerald */
+  --text-accent:     var(--emerald-dark);
+
+  /* Borders */
+  --border-default:  var(--slate-200);
+  --border-strong:   var(--slate-300);
+  --border-subtle:   var(--slate-100);
+  --border-accent:   var(--emerald-border);
+
+  /* Actions */
+  --action-primary:        var(--slate-900);
+  --action-primary-hover:  var(--slate-800);
+  --action-primary-text:   var(--white);
+  --action-accent:         var(--emerald);
+  --action-accent-hover:   var(--emerald-dark);
+  --action-accent-text:    var(--white);
+
+  /* Focus ring */
+  --ring: var(--slate-900);
+}

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Crossmint application answers</title>
+<link rel="stylesheet" href="../tokens/fonts.css">
+<style>
+doc-page:not(:defined){visibility:hidden}
+body{font-family:"Work Sans",sans-serif;color:#1c1c1e;font-size:15px;line-height:1.6}
+h1{font-size:28px;font-weight:500;letter-spacing:-0.5px;margin:0 0 4px}
+.meta{color:#6b6f7e;font-size:13px;margin-bottom:24px}
+.qa{break-inside:avoid;margin-bottom:24px}
+.qa h2{font-size:15px;font-weight:600;margin:0 0 6px;color:#555a6a}
+.qa p{margin:0 0 8px}
+mark{background:#fff4c4;padding:0 3px;border-radius:3px}
+.note{font-size:13px;color:#6b6f7e;background:#f7f8fa;border-radius:8px;padding:12px 16px}
+</style>
+</head>
+<body>
+<doc-page>
+<h1>Crossmint application answers</h1>
+<p class="meta">Copy-paste answers for Crossmint onboarding · Agent-Tickets</p>
+<div class="qa"><h2>What are you building?</h2>
+<p>Agent-Tickets is a peer-to-peer event-ticket marketplace where every trade settles through a USDC escrow program on Solana. Buyers fund the escrow, sellers are paid automatically when the ticket transfers, and buyers are refunded automatically if it doesn't. Both humans (web UI) and AI agents (JSON API) transact against the same inventory.</p></div>
+<div class="qa"><h2>What do you need from Crossmint?</h2>
+<p>Fiat-to-USDC checkout. Most ticket buyers don't hold USDC, so we need card payments (processed via Stripe) delivered as USDC on Solana into our escrow program, so that card buyers and wallet buyers settle through the identical on-chain escrow. Agentic checkout is a natural second step for us, since AI agents are first-class users of our marketplace.</p></div>
+<div class="qa"><h2>Which chains and tokens?</h2>
+<p>Solana, USDC only. The escrow program is written with Anchor; the spec is committed in our repo (github.com/GigaGoods/AGENT-TICKETS).</p></div>
+<div class="qa"><h2>Expected volume</h2>
+<p>Early stage: <mark>[N]</mark> transactions per month at $80 to $250 average, growing through partnerships with concert and event organizers we are contacting now.</p></div>
+<div class="qa"><h2>Who are your users, and where?</h2>
+<p>US consumers buying and selling event tickets, plus AI shopping agents acting on their behalf through our public JSON API.</p></div>
+<div class="qa"><h2>Compliance posture</h2>
+<p>Funds move buyer to escrow to seller; Agent-Tickets never takes custody outside the on-chain escrow program. We rely on Crossmint for KYC and fiat compliance on the card leg, and Stripe as the card processor. Disputes beyond the automatic escrow refund window are out of scope for V1 and documented as such.</p></div>
+<p class="note">Crossmint asks for a demo or deck on most partner applications. Attach the deployed site link and the organizer one-pager, and point at the escrow design doc in the repo. The agent API angle is worth leading with — agentic commerce is Crossmint's own pitch, so "AI agents already transact on our rail today" is the line that gets a reply.</p>
+</doc-page>
+<script src="../doc-page.js"></script>
+</body>
+</html>

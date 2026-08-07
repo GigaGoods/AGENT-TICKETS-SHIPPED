@@ -1,0 +1,135 @@
+.hero {
+  padding: 120px 0 64px;
+  text-align: center;
+  display: grid;
+  justify-items: center;
+  gap: 24px;
+}
+.hero :global(.h-display) {
+  max-width: 900px;
+  text-wrap: balance;
+}
+.hero :global(.sub) {
+  max-width: 620px;
+}
+.heroCtas {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.board {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+.board :global(.code) {
+  text-align: left;
+}
+.mini {
+  background: var(--canvas);
+  border: 1px solid var(--hairline-soft);
+  border-radius: var(--r-lg);
+  padding: 16px;
+  display: grid;
+  gap: 8px;
+  text-align: left;
+}
+.mini h4 {
+  font-size: 16px;
+}
+.mini :global(.small) {
+  font-size: 13px;
+}
+.mini :global(.price) {
+  font-size: 18px;
+}
+.hiwGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+.hiw {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+}
+.hiw .num {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  opacity: 0.6;
+}
+.hiw h3 {
+  font-size: 22px;
+  line-height: 1.3;
+}
+.hiw p {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--charcoal);
+}
+.roadGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.road {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+}
+.road ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--slate);
+}
+.road li {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+}
+.road li::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 99px;
+  background: var(--hairline-strong);
+  flex: none;
+  transform: translateY(-2px);
+}
+.road.live li::before {
+  background: var(--green);
+}
+.previewHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 16px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+@media (max-width: 960px) {
+  .hiwGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .roadGrid {
+    grid-template-columns: 1fr;
+  }
+  .board {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 600px) {
+  .hiwGrid {
+    grid-template-columns: 1fr;
+  }
+  .hero {
+    padding: 72px 0 48px;
+  }
+}

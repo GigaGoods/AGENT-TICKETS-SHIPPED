@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent API · Agent-Tickets</title>
+<link rel="stylesheet" href="site.css">
+<style>
+.page{padding:64px 0 96px;display:grid;gap:64px}
+.page-head{max-width:720px;display:grid;gap:16px}
+.docs{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
+.endpoint{display:grid;gap:16px}
+.endpoint .sig{display:flex;align-items:center;gap:12px}
+.method{font-family:var(--mono);font-size:13px;font-weight:600;border-radius:var(--r-full);padding:4px 12px}
+.method.get{background:var(--teal-light);color:var(--moss)}
+.method.post{background:var(--lavender);color:var(--blue)}
+.sig code{font-family:var(--mono);font-size:15px}
+.err-table{width:100%;border-collapse:collapse;font-size:14px}
+.err-table th{text-align:left;font-size:11px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:var(--steel);padding:8px 12px;border-bottom:1px solid var(--hairline)}
+.err-table td{padding:12px;border-bottom:1px solid var(--hairline-soft);color:var(--slate);vertical-align:top}
+.err-table td code{font-family:var(--mono);font-size:13px;color:var(--ink)}
+.play{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
+.play-panel{display:grid;gap:16px}
+.play textarea{border:1px solid var(--hairline-strong);border-radius:var(--r-md);padding:16px;font-family:var(--mono);font-size:13px;line-height:1.7;min-height:200px;resize:vertical;background:var(--canvas);color:var(--ink)}
+.play textarea:focus{outline:none;border:2px solid var(--blue);padding:15px}
+.status{font-family:var(--mono);font-size:13px;font-weight:600}
+.status.ok{color:var(--green)}
+.status.bad{color:var(--red-text)}
+.resp{min-height:200px}
+@media(max-width:960px){.docs,.play{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="nav"><div class="container nav-inner">
+<a class="brand" href="index.html"><span class="brand-mark"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path><path d="M13 5v2M13 17v2M13 11v2"></path></svg></span>Agent-Tickets</a>
+<nav class="nav-links"><a href="index.html" class="hide-sm">Home</a><a href="listings.html">Listings</a><a href="trust.html">Trust</a><a href="api.html" class="active">Agent API</a><a class="btn btn-primary btn-sm" href="listings.html#sell">List a ticket</a></nav>
+</div></header>
+<main class="container page">
+<section class="page-head">
+<span class="badge badge-agent">Agent front door</span>
+<h1 class="h1">The same inventory, one JSON call away.</h1>
+<p class="sub">Two endpoints. No auth for the demo, no SDK, no scraping. What an agent writes here shows up on the listings page for everyone, instantly.</p>
+</section>
+<section class="docs">
+<div class="card endpoint">
+<div class="sig"><span class="method get">GET</span><code>/api/listings</code></div>
+<p class="small">Read the full live inventory. Same data the web page renders.</p>
+<div><div class="code-label">200 OK</div><pre class="code">{
+  <span class="k">"listings"</span>: [
+    {
+      <span class="k">"id"</span>: <span class="g">"lst_9f2k1"</span>,
+      <span class="k">"event"</span>: <span class="g">"Silverline Tour"</span>,
+      <span class="k">"date"</span>: <span class="g">"2026-09-18"</span>,
+      <span class="k">"venue"</span>: <span class="g">"The Anthem, Washington DC"</span>,
+      <span class="k">"price"</span>: <span class="y">145</span>,
+      <span class="k">"source"</span>: <span class="g">"human"</span>
+    }
+  ]
+}</pre></div>
+</div>
+<div class="card endpoint">
+<div class="sig"><span class="method post">POST</span><code>/api/listings</code></div>
+<p class="small">Create a listing. Four fields, price in USDC. Returns 201 with the stored listing, or 400 with machine readable errors.</p>
+<div><div class="code-label">Request body</div><pre class="code">{
+  <span class="k">"event"</span>: <span class="g">"La Boheme"</span>,
+  <span class="k">"date"</span>: <span class="g">"2026-11-14"</span>,
+  <span class="k">"venue"</span>: <span class="g">"War Memorial Opera House"</span>,
+  <span class="k">"price"</span>: <span class="y">120</span>
+}</pre></div>
+<div><div class="code-label">400 Bad Request</div><pre class="code">{
+  <span class="k">"errors"</span>: [
+    { <span class="k">"field"</span>: <span class="g">"price"</span>, <span class="k">"code"</span>: <span class="g">"INVALID_PRICE"</span> }
+  ]
+}</pre></div>
+</div>
+</section>
+<section>
+<div class="section-head"><span class="overline">Validation</span><h2 class="h2">Errors an agent can act on</h2><p class="sub">Every 400 names the field and a stable code, so an agent caller can correct itself and retry without a human.</p></div>
+<div class="card" style="padding:8px 12px">
+<table class="err-table">
+<thead><tr><th>Code</th><th>Field</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>MISSING_FIELD</code></td><td>event, venue</td><td>Required and must be a non empty string.</td></tr>
+<tr><td><code>INVALID_DATE</code></td><td>date</td><td>Required, in YYYY-MM-DD format.</td></tr>
+<tr><td><code>INVALID_PRICE</code></td><td>price</td><td>Required, a number greater than 0, denominated in USDC.</td></tr>
+<tr><td><code>INVALID_JSON</code></td><td>body</td><td>The request body must parse as a JSON object.</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="playground">
+<div class="section-head"><span class="overline">Playground</span><h2 class="h2">Try it, live</h2><p class="sub">This playground runs against the same live inventory as the listings page. POST a ticket here, then open <a href="listings.html">Listings</a> and it's there.</p></div>
+<div class="play">
+<div class="card play-panel">
+<div class="pill-tabs"><button class="pill-tab active" id="tab-get" type="button">GET /api/listings</button><button class="pill-tab" id="tab-post" type="button">POST /api/listings</button></div>
+<textarea id="body" spellcheck="false" style="display:none">{
+  "event": "Neon Harbor Festival, day pass",
+  "date": "2026-10-03",
+  "venue": "Pier 70, San Francisco",
+  "price": 210
+}</textarea>
+<button class="btn btn-primary" id="send" type="button">Send request</button>
+</div>
+<div class="play-panel">
+<div class="code-label"><span>Response</span><span class="status" id="status"></span></div>
+<pre class="code resp" id="resp"><span class="c">Send a request to see the response.</span></pre>
+</div>
+</div>
+</section>
+</main>
+<script src="store.js"></script>
+<script>
+let mode='get';
+const $=function(id){return document.getElementById(id)};
+function setMode(m){mode=m;$('tab-get').classList.toggle('active',m==='get');$('tab-post').classList.toggle('active',m==='post');$('body').style.display=m==='post'?'block':'none'}
+$('tab-get').onclick=function(){setMode('get')};
+$('tab-post').onclick=function(){setMode('post')};
+$('send').onclick=function(){
+const st=$('status'),out=$('resp');
+if(mode==='get'){
+const listings=AT.load().map(function(l){return{id:l.id,event:l.event,date:l.date,venue:l.venue,price:l.price,source:l.source}});
+st.textContent='200 OK';st.className='status ok';
+out.textContent=JSON.stringify({listings:listings},null,2);
+}else{
+let body;
+try{body=JSON.parse($('body').value)}catch(e){body=null}
+const res=body===null?{ok:false,status:400,errors:[{field:'body',code:'INVALID_JSON',message:'Request body must be a JSON object.'}]}:AT.add(body,'agent','playground');
+if(res.ok){st.textContent='201 Created';st.className='status ok';out.textContent=JSON.stringify({listing:res.listing},null,2)}
+else{st.textContent='400 Bad Request';st.className='status bad';out.textContent=JSON.stringify({errors:res.errors},null,2)}
+}
+};
+</script>
+</body>
+</html>

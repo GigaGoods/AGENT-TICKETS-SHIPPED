@@ -1,0 +1,50 @@
+{
+  "name": "agent-tickets",
+  "productName": "Agent Tickets",
+  "version": "0.1.0",
+  "description": "Peer-to-peer event ticket marketplace on Solana. On-chain escrow replaces the 20-30% resale fee, and an MCP server lets AI agents buy tickets autonomously.",
+  "private": true,
+  "license": "UNLICENSED",
+  "keywords": [
+    "solana",
+    "anchor",
+    "escrow",
+    "tickets",
+    "marketplace",
+    "usdc",
+    "mcp",
+    "nextjs"
+  ],
+  "author": "",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "anchor:build": "anchor build",
+    "anchor:test": "anchor test",
+    "anchor:deploy": "anchor deploy --provider.cluster devnet",
+    "mcp": "node mcp/server.js"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.32.1",
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "@solana/spl-token": "^0.4.15",
+    "@solana/wallet-adapter-react": "^0.15.39",
+    "@solana/wallet-adapter-react-ui": "^0.9.39",
+    "@solana/wallet-adapter-wallets": "^0.19.38",
+    "@solana/web3.js": "^1.98.4",
+    "next": "^16.3.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "eslint": "^9.0.0",
+    "eslint-config-next": "^16.3.0",
+    "typescript": "^6.0.3"
+  }
+}

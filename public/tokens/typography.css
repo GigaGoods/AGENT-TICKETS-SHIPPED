@@ -1,0 +1,68 @@
+/* Kempt typography tokens.
+   Work Sans for headings/display (600, 700, tight tracking).
+   IBM Plex Sans for body and captions (400, 500, 600). */
+
+:root {
+  /* ---- Families ---- */
+  --font-display: "Work Sans", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-heading: "Work Sans", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-body:    "IBM Plex Sans", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  /* Mono is the OS default — not a brand font, used only for IDs/timers. */
+  --font-mono:    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+
+  /* ---- Weights ---- */
+  --weight-regular:  400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+  --weight-bold:     700;
+
+  /* ---- Type scale: size / line-height / letter-spacing ----
+     Headlines are bold Work Sans with tight tracking.
+     Body is IBM Plex Sans with generous line height. */
+  --display-2xl: 4.5rem;    /* 72px hero headlines */
+  --display-2xl-lh: 1.05;    /* @kind other */
+  --display-2xl-ls: -0.025em; /* @kind other */
+
+  --display-xl: 3.75rem;    /* 60px page heroes */
+  --display-xl-lh: 1.08;     /* @kind other */
+  --display-xl-ls: -0.02em;  /* @kind other */
+
+  --display-lg: 3rem;       /* 48px section heroes */
+  --display-lg-lh: 1.12;     /* @kind other */
+  --display-lg-ls: -0.015em; /* @kind other */
+
+  --display-md: 2.5rem;     /* 40px large headings */
+  --display-md-lh: 1.15;     /* @kind other */
+  --display-md-ls: -0.01em;  /* @kind other */
+
+  --heading-xl: 2rem;       /* 32px page h1 */
+  --heading-xl-lh: 1.2;      /* @kind other */
+  --heading-xl-ls: -0.01em;  /* @kind other */
+
+  --heading-lg: 1.5rem;     /* 24px section h2 */
+  --heading-lg-lh: 1.25;     /* @kind other */
+  --heading-lg-ls: -0.01em;  /* @kind other */
+
+  --heading-md: 1.25rem;    /* 20px card titles */
+  --heading-md-lh: 1.35;     /* @kind other */
+  --heading-md-ls: -0.005em; /* @kind other */
+
+  --heading-sm: 1.125rem;   /* 18px h4 */
+  --heading-sm-lh: 1.4;      /* @kind other */
+
+  --body-lg: 1.125rem;      /* 18px lead paragraphs */
+  --body-lg-lh: 1.65;        /* @kind other */
+
+  --body-md: 1rem;          /* 16px default body */
+  --body-md-lh: 1.6;         /* @kind other */
+
+  --body-sm: 0.875rem;      /* 14px small text, dense UI */
+  --body-sm-lh: 1.55;        /* @kind other */
+
+  --caption: 0.75rem;       /* 12px labels, captions */
+  --caption-lh: 1.45;        /* @kind other */
+
+  --overline: 0.6875rem;    /* 11px uppercase section labels */
+  --overline-lh: 1.4;        /* @kind other */
+  --overline-ls: 0.08em;     /* @kind other */
+}
