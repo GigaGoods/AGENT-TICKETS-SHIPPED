@@ -2,6 +2,7 @@
 // Usage: npx ts-mocha --help >/dev/null; ANCHOR_PROVIDER_URL=https://api.devnet.solana.com \
 //        ANCHOR_WALLET=~/.config/solana/id.json npx ts-node scripts/init-config.ts
 import * as anchor from "@coral-xyz/anchor";
+import BN from "bn.js";
 import { PublicKey, SystemProgram } from "@solana/web3.js";
 import * as fs from "fs";
 import * as path from "path";
@@ -33,8 +34,8 @@ async function main() {
   const sig = await program.methods
     .initializeConfig(
       FEE_BPS,
-      new anchor.BN(DELIVERY_WINDOW_SECS),
-      new anchor.BN(INSPECTION_WINDOW_SECS)
+      new BN(DELIVERY_WINDOW_SECS),
+      new BN(INSPECTION_WINDOW_SECS)
     )
     .accounts({
       config: configPda,

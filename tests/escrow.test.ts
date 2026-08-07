@@ -6,9 +6,11 @@ import {
   getAssociatedTokenAddressSync,
   mintTo,
   getAccount,
+  TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 import { Keypair, LAMPORTS_PER_SOL, PublicKey, SystemProgram } from "@solana/web3.js";
 import { assert } from "chai";
+import BN from "bn.js";
 
 // Windows are set tiny (seconds) at init so timeout paths are testable with sleeps.
 const DELIVERY_WINDOW = 4;
@@ -57,7 +59,7 @@ describe("agent_tickets_escrow", () => {
     [configPda] = PublicKey.findProgramAddressSync([Buffer.from("config")], program.programId);
 
     await program.methods
-      .initializeConfig(300, new anchor.BN(DELIVERY_WINDOW), new anchor.BN(INSPECTION_WINDOW))
+      .initializeConfig(300, new BN(DELIVERY_WINDOW), new BN(INSPECTION_WINDOW))
       .accounts({
         config: configPda,
         authority: provider.wallet.publicKey,
@@ -74,10 +76,10 @@ describe("agent_tickets_escrow", () => {
     const eventStart = Math.floor(Date.now() / 1000) + 3 * 3600; // 3h out clears the 2h grace
     await program.methods
       .createListing(
-        new anchor.BN(id.toString()),
-        new anchor.BN(PRICE.toString()),
+        new BN(id.toString()),
+        new BN(PRICE.toString()),
         Array.from(new Uint8Array(32).fill(1)),
-        new anchor.BN(eventStart),
+        new BN(eventStart),
         1,
         "ipfs://placeholder"
       )
@@ -100,6 +102,7 @@ describe("agent_tickets_escrow", () => {
         buyerToken,
         vault,
         usdcMint,
+        tokenProgram: TOKEN_PROGRAM_ID,
       })
       .signers([buyer])
       .rpc();
@@ -117,6 +120,7 @@ describe("agent_tickets_escrow", () => {
     sellerToken,
     feeToken,
     usdcMint,
+    tokenProgram: TOKEN_PROGRAM_ID,
   });
 
   it("happy path: list -> buy -> mark_delivered -> confirm -> seller paid minus 3% fee", async () => {
@@ -164,6 +168,7 @@ describe("agent_tickets_escrow", () => {
         vault,
         buyerToken,
         usdcMint,
+        tokenProgram: TOKEN_PROGRAM_ID,
       })
       .rpc(); // signed only by provider wallet: proves the crank is permissionless
 
@@ -213,6 +218,7 @@ describe("agent_tickets_escrow", () => {
           buyerToken: b2Token,
           vault: vault2,
           usdcMint,
+          tokenProgram: TOKEN_PROGRAM_ID,
         })
         .signers([buyer2])
         .rpc();
@@ -237,6 +243,7 @@ describe("agent_tickets_escrow", () => {
           vault,
           buyerToken,
           usdcMint,
+          tokenProgram: TOKEN_PROGRAM_ID,
         })
         .rpc();
       assert.fail("early refund should have failed");

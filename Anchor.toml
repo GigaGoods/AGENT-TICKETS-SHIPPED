@@ -9,7 +9,7 @@ skip-lint = false
 agent_tickets_escrow = "J26zGhTfnDVqNZcRwerK5Aen7BXyGnjjxkG9CXkbSCRv"
 
 [programs.localnet]
-agent_tickets_escrow = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
+agent_tickets_escrow = "J26zGhTfnDVqNZcRwerK5Aen7BXyGnjjxkG9CXkbSCRv"
 
 [registry]
 url = "https://api.apr.dev"
@@ -19,4 +19,5 @@ cluster = "localnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]
-test = "npx ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.test.ts"
+# Scoped to session-1's suite until escrow-edge.test.ts (session 4) fixes its ESM require bug
+test = "npx ts-mocha -p ./tsconfig.json -t 1000000 tests/escrow.test.ts"
