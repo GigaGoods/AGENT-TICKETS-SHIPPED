@@ -23,7 +23,10 @@ import {
   Keypair,
   LAMPORTS_PER_SOL,
   PublicKey,
+  SystemProgram,
+  Transaction,
   clusterApiUrl,
+  sendAndConfirmTransaction,
 } from "@solana/web3.js";
 import {
   ACCOUNT_SIZE,
@@ -42,16 +45,24 @@ const WALLET_DIR = path.join(os.homedir(), ".config", "agent-tickets", "wallets"
 const ADDRESSES_FILE = path.join(__dirname, "devnet-addresses.json");
 
 const RPC_URL = process.env.SOLANA_RPC_URL ?? clusterApiUrl("devnet");
+const SKIP_AIRDROP = process.env.SETUP_SKIP_AIRDROP === "1";
 const USDC_DECIMALS = 6;
 const TARGET_USDC_BASE_UNITS = 1_000_000_000n; // 1,000 USDC at 6dp
 
-/** Below this, a wallet can't reliably sign its own escrow txs, so we airdrop. */
-const MIN_SOL = 0.5;
+// A wallet needs SOL only to sign its own txs (~0.000005 each), so the floor is
+// low; the demo allotment sits comfortably above it. Below the floor we airdrop
+// (or the payer bridges); at or above it a wallet is considered ready.
+const MIN_SOL = 0.05;
 /** Slack over the payer's computed rent bill, for signature fees and retries. */
 const PAYER_FEE_BUFFER_LAMPORTS = 2_000_000; // 0.002 SOL
 /** Devnet's per-request airdrop cap is unreliable above this. */
 const AIRDROP_SOL = 1;
 const AIRDROP_ATTEMPTS = 3;
+
+/** Per-wallet demo allotment when the payer bridges SOL to its peers. */
+const DEMO_SOL_PER_WALLET = 0.1;
+/** SOL the payer keeps for its own signing after distributing. */
+const PAYER_RESERVE_LAMPORTS = 20_000_000; // 0.02 SOL
 
 /**
  * The public faucet allows 2 airdrops per 8 hours per IP. Retrying a rate-limit
@@ -114,6 +125,14 @@ async function ensureSol(
     return lamports;
   }
 
+  // When the payer is already funded (e.g. hand-topped or airdropped by an
+  // outer script), skip the faucet so we don't spend the 2-per-8h quota. Peers
+  // still get bridged SOL from the payer in distributeSol.
+  if (SKIP_AIRDROP) {
+    log(`  ${name}: ${(lamports / LAMPORTS_PER_SOL).toFixed(3)} SOL (airdrop skipped)`);
+    return lamports;
+  }
+
   for (let attempt = 1; attempt <= AIRDROP_ATTEMPTS; attempt++) {
     try {
       const sig = await connection.requestAirdrop(
@@ -143,6 +162,57 @@ async function ensureSol(
   }
 
   return connection.getBalance(keypair.publicKey);
+}
+
+/**
+ * Top up peers from the payer's own balance for wallets the faucet couldn't
+ * reach. Best-effort: transfers only what the payer can spare above its reserve,
+ * updates `balances` in place, and never lets the payer drop below its reserve.
+ */
+async function distributeSol(
+  connection: Connection,
+  payer: Keypair,
+  peers: { name: WalletName; keypair: Keypair }[],
+  balances: Map<WalletName, number>
+): Promise<void> {
+  const needy = peers.filter(
+    ({ name }) => (balances.get(name) ?? 0) < MIN_SOL * LAMPORTS_PER_SOL
+  );
+  if (needy.length === 0) return;
+
+  const target = DEMO_SOL_PER_WALLET * LAMPORTS_PER_SOL;
+  const payerName = "alice" as WalletName; // wallets[0] by construction
+  let payerBalance = await connection.getBalance(payer.publicKey);
+
+  log("\nDistributing SOL from payer to peers:");
+  for (const { name, keypair } of needy) {
+    const have = balances.get(name) ?? 0;
+    const want = Math.max(0, target - have);
+    const spendable = payerBalance - PAYER_RESERVE_LAMPORTS - 5000; // keep reserve + fee
+    const amount = Math.min(want, spendable);
+    if (amount <= 0) {
+      log(`  ${name}: payer has nothing to spare`);
+      continue;
+    }
+
+    const bh = await connection.getLatestBlockhash();
+    const tx = new Transaction({
+      feePayer: payer.publicKey,
+      blockhash: bh.blockhash,
+      lastValidBlockHeight: bh.lastValidBlockHeight,
+    }).add(
+      SystemProgram.transfer({
+        fromPubkey: payer.publicKey,
+        toPubkey: keypair.publicKey,
+        lamports: amount,
+      })
+    );
+    await sendAndConfirmTransaction(connection, tx, [payer], { commitment: "confirmed" });
+
+    balances.set(name, have + amount);
+    payerBalance = await connection.getBalance(payer.publicKey);
+    log(`  ${name}: +${(amount / LAMPORTS_PER_SOL).toFixed(3)} SOL from ${payerName}`);
+  }
 }
 
 // ---------- address book ----------
@@ -248,17 +318,6 @@ async function main() {
     balances.set(name, await ensureSol(connection, name, keypair));
   }
 
-  const underfunded = wallets.filter(
-    ({ name }) => (balances.get(name) ?? 0) < MIN_SOL * LAMPORTS_PER_SOL
-  );
-  if (underfunded.length > 0) {
-    log("\n  Devnet faucet did not fund these wallets (rate limit is normal):");
-    for (const { name, keypair } of underfunded) {
-      log(`    ${name}  ${keypair.publicKey.toBase58()}`);
-    }
-    log("  Top them up at https://faucet.solana.com (paste the address, pick devnet), then rerun.");
-  }
-
   // The payer signs the mint creation, every ATA creation, and every mint_to.
   // Only it strictly needs SOL — the others can be funded later without redoing
   // any of the work below. Gate on the actual rent bill rather than a round
@@ -276,6 +335,24 @@ async function main() {
     );
     process.exitCode = 1;
     return;
+  }
+
+  // The faucet allows only 2 airdrops per 8h, so it can never fund all four
+  // wallets in one window — yet every demo wallet needs SOL to sign its own
+  // escrow txs (design doc §5.6). Bridge the gap from the payer's own balance:
+  // one airdrop to the payer bootstraps the whole team. Best-effort — the mint
+  // and USDC balances below do not depend on it.
+  await distributeSol(connection, payer.keypair, wallets.slice(1), balances);
+
+  const stillUnderfunded = wallets.filter(
+    ({ name }) => (balances.get(name) ?? 0) < MIN_SOL * LAMPORTS_PER_SOL
+  );
+  if (stillUnderfunded.length > 0) {
+    log("\n  These wallets are still under the SOL floor (payer could not spare enough):");
+    for (const { name, keypair } of stillUnderfunded) {
+      log(`    ${name}  ${keypair.publicKey.toBase58()}`);
+    }
+    log("  Top them up at https://faucet.solana.com (paste the address, pick devnet), then rerun.");
   }
 
   const book = readAddressBook();
