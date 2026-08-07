@@ -6,7 +6,8 @@
     "crank": "ts-node scripts/crank.ts",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "setup:devnet": "ts-node scripts/setup-devnet.ts",
-    "test": "anchor test"
+    "test": "anchor test",
+    "test:edge": "ts-mocha -p ./tsconfig.json -t 1000000 tests/escrow-edge.test.ts"
   },
   "devDependencies": {
     "@coral-xyz/anchor": "^0.31.1",
