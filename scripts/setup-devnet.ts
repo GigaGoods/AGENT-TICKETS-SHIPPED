@@ -69,9 +69,11 @@ interface AddressBook {
   rpcUrl: string;
   usdcMint: string;
   usdcDecimals: number;
-  mintAuthority: string;
+  usdcMintAuthority: string;
   wallets: Record<string, { pubkey: string; usdcAta: string }>;
   updatedAt: string;
+  /** Keys owned by sibling scripts (programId, _note, …) are preserved as-is. */
+  [key: string]: unknown;
 }
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -165,23 +167,25 @@ async function ensureMint(
   existing: string | undefined
 ): Promise<PublicKey> {
   if (existing) {
+    // A recorded mint we can't mint from is not an error — the address book
+    // ships pointing at the shared devnet USDC-Dev mint, which nobody here has
+    // authority over. Fall through and make our own rather than dying.
     try {
       const mint = await getMint(connection, new PublicKey(existing));
       if (mint.decimals !== USDC_DECIMALS) {
-        throw new Error(
-          `recorded mint ${existing} has ${mint.decimals} decimals, expected ${USDC_DECIMALS}`
+        log(
+          `  recorded mint ${existing} has ${mint.decimals} decimals, need ${USDC_DECIMALS}; creating our own`
         );
-      }
-      if (!mint.mintAuthority?.equals(authority.publicKey)) {
-        throw new Error(
-          `recorded mint ${existing} authority is ${mint.mintAuthority?.toBase58() ?? "none"}, ` +
-            `expected ${authority.publicKey.toBase58()}`
+      } else if (!mint.mintAuthority?.equals(authority.publicKey)) {
+        log(
+          `  recorded mint ${existing} is not ours ` +
+            `(authority ${mint.mintAuthority?.toBase58() ?? "none"}); creating our own`
         );
+      } else {
+        log(`  reusing mint ${existing}`);
+        return mint.address;
       }
-      log(`  reusing mint ${existing}`);
-      return mint.address;
-    } catch (err) {
-      if (err instanceof Error && err.message.startsWith("recorded mint")) throw err;
+    } catch {
       log(`  recorded mint ${existing} not found on this cluster; creating a new one`);
     }
   }
@@ -195,6 +199,20 @@ async function ensureMint(
   );
   log(`  created mint ${mint.toBase58()}`);
   return mint;
+}
+
+/**
+ * Which network the address book describes. Never assume devnet just because
+ * that's the script's name — pointing SOLANA_RPC_URL at a local validator and
+ * recording the result as "devnet" is how a demo ends up chasing a mint that
+ * only ever existed on someone's laptop.
+ */
+function clusterLabel(url: string): string {
+  if (/127\.0\.0\.1|localhost/.test(url)) return "localnet";
+  if (/testnet/.test(url)) return "testnet";
+  if (/devnet/.test(url)) return "devnet";
+  if (/mainnet/.test(url)) return "mainnet-beta";
+  return "unknown";
 }
 
 /** Rent for one mint + one ATA per wallet, plus a fee buffer. */
@@ -261,7 +279,10 @@ async function main() {
   }
 
   const book = readAddressBook();
-  const sameCluster = book.rpcUrl === RPC_URL;
+  // Same cluster, not same URL — swapping the public RPC for a provider one
+  // must not orphan the mint and mint a duplicate.
+  const sameCluster =
+    typeof book.rpcUrl === "string" && clusterLabel(book.rpcUrl) === clusterLabel(RPC_URL);
 
   log("\nTest USDC mint:");
   const mint = await ensureMint(
@@ -304,12 +325,20 @@ async function main() {
     }
   }
 
-  const next: AddressBook = {
-    cluster: "devnet",
+  // Merge, don't overwrite: this file is shared with the crank and deploy
+  // scripts, which own keys like programId and _note. Blowing those away on
+  // every setup run breaks a teammate silently.
+  const next = {
+    ...book,
+    cluster: clusterLabel(RPC_URL),
     rpcUrl: RPC_URL,
     usdcMint: mint.toBase58(),
     usdcDecimals: USDC_DECIMALS,
-    mintAuthority: payer.keypair.publicKey.toBase58(),
+    usdcMintAuthority: payer.keypair.publicKey.toBase58(),
+    _usdcMintNote:
+      "usdcMint is the local 6-decimal TEST mint created by setup-devnet.ts " +
+      "(authority = the first team wallet), not the shared devnet USDC-Dev faucet mint. " +
+      "The team wallets hold this mint, so initialize_config must point Config.usdc_mint at it.",
     wallets: walletBook,
     updatedAt: new Date().toISOString(),
   };
