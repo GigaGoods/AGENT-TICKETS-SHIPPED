@@ -90,7 +90,7 @@ Adding a new provider: create a file in `verification/vision/providers/`, implem
 
 ## API usage
 
-Served by the Next.js app (`npm run dev`), and used by the "List a ticket" flow on `/listings`:
+Served by the Next.js app (`npm run dev`), and used by the "List a ticket" flow on `/sell`:
 
 ```bash
 POST /api/verify

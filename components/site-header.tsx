@@ -49,7 +49,7 @@ export function SiteHeader() {
               );
             })}
             {CTA_PATHS.includes(pathname) && (
-              <Link className="btn btn-primary btn-sm" href="/listings#sell">
+              <Link className="btn btn-primary btn-sm" href="/sell">
                 List a ticket
               </Link>
             )}

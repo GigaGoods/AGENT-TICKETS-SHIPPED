@@ -220,7 +220,7 @@ export default function HomePage() {
             <Link
               className="btn btn-secondary"
               style={{ color: "#fff", borderColor: "rgb(255 255 255 / 0.4)" }}
-              href="/listings#sell"
+              href="/sell"
             >
               List one yourself
             </Link>
