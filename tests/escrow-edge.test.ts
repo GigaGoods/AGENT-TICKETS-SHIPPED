@@ -30,6 +30,7 @@ import {
 } from "@solana/spl-token";
 import { Keypair, LAMPORTS_PER_SOL, PublicKey, SystemProgram } from "@solana/web3.js";
 import { assert } from "chai";
+import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 
 // Same tiny windows as the base suite so timeout paths are reachable with sleeps.
 const DELIVERY_WINDOW = 4;
@@ -134,7 +135,7 @@ describe("agent_tickets_escrow — edge cases", () => {
     const vault = getAssociatedTokenAddressSync(usdcMint, order, true);
     await program.methods
       .lockPurchase()
-      .accounts({ config: configPda, listing, order, buyer: buyer.publicKey, buyerToken, vault, usdcMint })
+      .accounts({ config: configPda, listing, order, buyer: buyer.publicKey, buyerToken, vault, usdcMint, tokenProgram: TOKEN_PROGRAM_ID })
       .signers([buyer])
       .rpc();
     return { order, vault };
@@ -158,6 +159,7 @@ describe("agent_tickets_escrow — edge cases", () => {
     sellerToken,
     feeToken,
     usdcMint,
+    tokenProgram: TOKEN_PROGRAM_ID,
   });
 
   const refundAccounts = (listing: PublicKey, order: PublicKey, vault: PublicKey) => ({
@@ -169,6 +171,7 @@ describe("agent_tickets_escrow — edge cases", () => {
     vault,
     buyerToken,
     usdcMint,
+    tokenProgram: TOKEN_PROGRAM_ID,
   });
 
   const disputeAccounts = (listing: PublicKey, order: PublicKey, vault: PublicKey) => ({
@@ -183,6 +186,7 @@ describe("agent_tickets_escrow — edge cases", () => {
     sellerToken,
     feeToken,
     usdcMint,
+    tokenProgram: TOKEN_PROGRAM_ID,
   });
 
   async function expectError(name: string, fn: () => Promise<unknown>) {
