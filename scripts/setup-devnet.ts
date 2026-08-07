@@ -37,6 +37,9 @@ import {
   getOrCreateAssociatedTokenAccount,
   mintTo,
 } from "@solana/spl-token";
+import { fileURLToPath } from "url";
+import * as __p from "path";
+const __dirname = __p.dirname(fileURLToPath(import.meta.url));
 
 const WALLET_NAMES = ["alice", "bob", "carol", "dave"] as const;
 type WalletName = (typeof WALLET_NAMES)[number];

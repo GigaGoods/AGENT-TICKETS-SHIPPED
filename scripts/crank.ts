@@ -40,6 +40,9 @@ import {
   selectDue,
   type OrderAccount,
 } from "./crank-core";
+import { fileURLToPath } from "url";
+import * as __p from "path";
+const __dirname = __p.dirname(fileURLToPath(import.meta.url));
 
 const REPO_ROOT = path.resolve(__dirname, "..");
 const IDL_PATH = path.join(REPO_ROOT, "target", "idl", "agent_tickets_escrow.json");

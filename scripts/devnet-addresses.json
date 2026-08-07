@@ -26,5 +26,8 @@
       "usdcAta": "HuJA7NNMTNjoMQX6jsjkhczAyaPrgtXQU2jQJ9NDyB6N"
     }
   },
-  "updatedAt": "2026-08-07T00:56:01.809Z"
+  "updatedAt": "2026-08-07T00:56:01.809Z",
+  "escrowProgram": "J26zGhTfnDVqNZcRwerK5Aen7BXyGnjjxkG9CXkbSCRv",
+  "configPda": "B1m8WKWD4oDEwA12w5xeY8FNSR4K1prqrNzfjWVZ1JdS",
+  "configUsdcMint": "8ojgAs4EJBjJFQxJJVFLoieGjEpfGrH9zSao3XxVUEjh"
 }

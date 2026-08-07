@@ -6,6 +6,9 @@ import BN from "bn.js";
 import { PublicKey, SystemProgram } from "@solana/web3.js";
 import * as fs from "fs";
 import * as path from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Session-2 handoff §4: Config.usdc_mint MUST be the team's test mint (the one the
 // wallets actually hold), not the shared USDC-Dev mint, or lock_purchase fails InvalidMint.

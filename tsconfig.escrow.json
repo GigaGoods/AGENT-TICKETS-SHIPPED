@@ -11,11 +11,12 @@
     "lib": [
       "es2022"
     ],
-    "module": "commonjs",
+    "module": "esnext",
     "target": "es2022",
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "moduleResolution": "bundler"
   },
   "include": [
     "tests/**/*.ts",
