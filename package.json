@@ -31,7 +31,6 @@
     "anchor:test": "anchor test",
     "anchor:deploy": "anchor deploy --provider.cluster devnet",
     "mcp": "node mcp/server.js",
-    "server": "node server.js",
     "verify:doc": "node examples/verify-document.js"
   },
   "dependencies": {

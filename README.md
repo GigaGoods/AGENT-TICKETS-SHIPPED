@@ -11,6 +11,7 @@ One live marketplace with two front doors: a human lists a ticket with a simple 
 
 **Core features (V1)**
 - List a ticket for sale via web form: event name, date, venue, price in USDC
+- Document verification: sellers upload a redacted proof of purchase and Gemini cross-checks it against the listing before it earns a verified badge (`POST /api/verify`, see [docs/document-verification.md](docs/document-verification.md))
 - Live listings page — new tickets appear instantly for everyone
 - Agent JSON API: `POST /api/listings` to list a ticket, `GET /api/listings` to read inventory — same live data as the web UI
 - Validation with machine-readable errors so agent callers can self-correct

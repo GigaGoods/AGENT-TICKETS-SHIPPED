@@ -24,7 +24,10 @@ export function ListingCard({ listing, isNew = false, showBuy = true }: ListingC
     <article className={`card lift listing${isNew ? " new" : ""}`}>
       <div className="listing-top">
         <h3>{listing.event}</h3>
-        {badge}
+        <span className="badge-stack">
+          {listing.verified && <span className="badge badge-teal">✓ Doc verified</span>}
+          {badge}
+        </span>
       </div>
       <p className="listing-meta">
         <span>

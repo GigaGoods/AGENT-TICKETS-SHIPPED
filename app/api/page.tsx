@@ -13,8 +13,9 @@ export default function AgentApiPage() {
         <span className="badge badge-agent">Agent front door</span>
         <h1 className="h1">The same inventory, one JSON call away.</h1>
         <p className="sub">
-          Two endpoints. No auth for the demo, no SDK, no scraping. What an agent writes here shows
-          up on the listings page for everyone, instantly.
+          Three endpoints. No auth for the demo, no SDK, no scraping. What an agent writes here
+          shows up on the listings page for everyone, instantly — and proof-of-purchase documents
+          are checked by a real vision model before a listing earns its verified badge.
         </p>
       </section>
 
@@ -103,6 +104,71 @@ export default function AgentApiPage() {
               {": "}
               <span className="g">{'"INVALID_PRICE"'}</span>
               {" }\n  ]\n}"}
+            </pre>
+          </div>
+        </div>
+        <div className={`card ${styles.endpoint}`}>
+          <div className={styles.sig}>
+            <span className={`${styles.method} ${styles.post}`}>POST</span>
+            <code>/api/verify</code>
+          </div>
+          <p className="small">
+            Check a proof-of-purchase document against listing details. This one is live — Gemini
+            reads the document server-side and cross-checks event, date, and venue. Returns 503
+            when no vision API key is configured.
+          </p>
+          <div>
+            <div className="code-label">Request body</div>
+            <pre className="code">
+              {"{\n  "}
+              <span className="k">{'"documentBase64"'}</span>
+              {": "}
+              <span className="g">{'"<base64 PNG, JPEG, WebP or PDF>"'}</span>
+              {",\n  "}
+              <span className="k">{'"mimeType"'}</span>
+              {": "}
+              <span className="g">{'"image/png"'}</span>
+              {",\n  "}
+              <span className="k">{'"listing"'}</span>
+              {": {\n    "}
+              <span className="k">{'"eventName"'}</span>
+              {": "}
+              <span className="g">{'"La Boheme"'}</span>
+              {",\n    "}
+              <span className="k">{'"eventDate"'}</span>
+              {": "}
+              <span className="g">{'"2026-11-14"'}</span>
+              {",\n    "}
+              <span className="k">{'"venue"'}</span>
+              {": "}
+              <span className="g">{'"War Memorial Opera House"'}</span>
+              {"\n  }\n}"}
+            </pre>
+          </div>
+          <div>
+            <div className="code-label">200 OK</div>
+            <pre className="code">
+              {"{\n  "}
+              <span className="k">{'"ok"'}</span>
+              {": "}
+              <span className="y">true</span>
+              {",\n  "}
+              <span className="k">{'"verification"'}</span>
+              {": {\n    "}
+              <span className="k">{'"status"'}</span>
+              {": "}
+              <span className="g">{'"verified"'}</span>
+              {",  "}
+              <span className="c">{"// or rejected | needs_review"}</span>
+              {"\n    "}
+              <span className="k">{'"confidence"'}</span>
+              {": "}
+              <span className="y">0.92</span>
+              {",\n    "}
+              <span className="k">{'"fieldMatches"'}</span>
+              {": [ "}
+              <span className="c">{"…per-field results…"}</span>
+              {" ]\n  }\n}"}
             </pre>
           </div>
         </div>

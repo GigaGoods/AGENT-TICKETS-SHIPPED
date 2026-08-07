@@ -37,8 +37,8 @@ verification/
     providers/
       openai-vision.js  — OpenAI GPT-4o Vision (optional alternative)
       google-vision.js  — Google Gemini Vision (default)
-api/routes/
-  verify.js             — POST /api/verify HTTP handler
+app/api/verify/
+  route.ts              — POST /api/verify (Next.js route handler)
 config.js               — Reads env vars
 verification/caveats.js — Caveats returned with every verification result
 docs/verification-caveats.md — Full limitations & fraud vectors
@@ -90,7 +90,7 @@ Adding a new provider: create a file in `verification/vision/providers/`, implem
 
 ## API usage
 
-Once wired into your Node server:
+Served by the Next.js app (`npm run dev`), and used by the "List a ticket" flow on `/listings`:
 
 ```bash
 POST /api/verify

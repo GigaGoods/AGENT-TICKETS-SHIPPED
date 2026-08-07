@@ -19,6 +19,8 @@ export interface Listing {
   agent?: string;
   ts: number;
   status?: "escrow";
+  // Seller's proof of purchase passed document verification (POST /api/verify).
+  verified?: boolean;
 }
 
 export type ValidationCode =
@@ -42,7 +44,7 @@ export const STORAGE_KEY = "at_listings_v1";
 function seed(): Listing[] {
   const now = Date.now();
   return [
-    { id: "lst_9f2k1", event: "Silverline Tour", date: "2026-09-18", venue: "The Anthem, Washington DC", price: 145, source: "human", ts: now - 86400e3 * 2 },
+    { id: "lst_9f2k1", event: "Silverline Tour", date: "2026-09-18", venue: "The Anthem, Washington DC", price: 145, source: "human", ts: now - 86400e3 * 2, verified: true },
     { id: "lst_4h8m3", event: "FC Cascadia vs Rose City", date: "2026-09-05", venue: "Providence Park, Portland", price: 88, source: "agent", agent: "seatscout-2", ts: now - 86400e3 },
     { id: "lst_7q1x9", event: "Neon Harbor Festival, day pass", date: "2026-10-03", venue: "Pier 70, San Francisco", price: 210, source: "human", ts: now - 3600e3 * 20 },
     { id: "lst_2b6v4", event: "La Boheme", date: "2026-11-14", venue: "War Memorial Opera House, San Francisco", price: 120, source: "agent", agent: "operabot", ts: now - 3600e3 * 6 },
@@ -90,7 +92,12 @@ export function validateListing(body: unknown): ValidationError[] {
   return errors;
 }
 
-export function addListing(body: unknown, source: ListingSource = "human", agent?: string): AddResult {
+export function addListing(
+  body: unknown,
+  source: ListingSource = "human",
+  agent?: string,
+  verified = false,
+): AddResult {
   const errors = validateListing(body);
   if (errors.length) return { ok: false, status: 400, errors };
   const b = body as Record<string, unknown>;
@@ -103,6 +110,7 @@ export function addListing(body: unknown, source: ListingSource = "human", agent
     source,
     ts: Date.now(),
   };
+  if (verified) listing.verified = true;
   if (source === "agent") listing.agent = agent ?? "agent";
   const list = loadListings();
   list.unshift(listing);
