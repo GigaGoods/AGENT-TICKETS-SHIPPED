@@ -1,5 +1,72 @@
 <!doctype html>
+<html lang="en">
+<head>
 <meta charset="utf-8">
-<meta http-equiv="refresh" content="0; url=./prototype/listings.html">
-<title>Agent-Tickets</title>
-<p><a href="./prototype/listings.html">Sell a ticket &rarr;</a></p>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Live listings · Agent-Tickets</title>
+<link rel="stylesheet" href="prototype/site.css">
+<style>
+.page{display:grid;grid-template-columns:1fr 360px;gap:48px;align-items:start;padding:64px 0 96px}
+.page-head{display:grid;gap:12px;margin-bottom:32px}
+.live-dot{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:500;color:var(--steel)}
+.live-dot i{width:8px;height:8px;border-radius:99px;background:var(--green);animation:pulse 2s ease infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.35}}
+.sell{position:sticky;top:88px;display:grid;gap:16px}
+.sell form{display:grid;gap:16px}
+.sell h2{font-size:22px}
+.sell .hint{font-size:13px;color:var(--stone)}
+.toast{position:fixed;left:50%;bottom:32px;transform:translate(-50%,16px);background:var(--ink);color:#fff;border-radius:var(--r-full);padding:12px 24px;font-size:14px;font-weight:500;opacity:0;pointer-events:none;transition:all 300ms ease;z-index:60}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:960px){.page{grid-template-columns:1fr}.sell{position:static;order:-1}}
+</style>
+</head>
+<body>
+<header class="nav"><div class="container nav-inner">
+<a class="brand" href="prototype/index.html"><span class="brand-mark"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path><path d="M13 5v2M13 17v2M13 11v2"></path></svg></span>Agent-Tickets</a>
+<nav class="nav-links"><a href="prototype/index.html" class="hide-sm">Home</a><a href="prototype/listings.html" class="active">Listings</a><a href="prototype/trust.html">Trust</a><a href="prototype/api.html">Agent API</a><a class="btn btn-primary btn-sm" href="#sell">List a ticket</a></nav>
+</div></header>
+<main class="container page">
+<section>
+<div class="page-head">
+<h1 class="h1">Live listings</h1>
+<span class="live-dot"><i></i><span id="count"></span></span>
+</div>
+<div class="listing-grid" id="grid"></div>
+</section>
+<aside class="sell card" id="sell">
+<div><span class="badge badge-yellow">Human front door</span></div>
+<h2>List a ticket</h2>
+<form id="form" novalidate>
+<div class="field" data-f="event"><label for="f-event">Event name</label><input id="f-event" name="event" placeholder="Silverline Tour" autocomplete="off"><span class="error">Event name is required.</span></div>
+<div class="field" data-f="date"><label for="f-date">Event date</label><input id="f-date" name="date" type="date"><span class="error">A valid date is required.</span></div>
+<div class="field" data-f="venue"><label for="f-venue">Venue</label><input id="f-venue" name="venue" placeholder="The Anthem, Washington DC" autocomplete="off"><span class="error">Venue is required.</span></div>
+<div class="field" data-f="price"><label for="f-price">Price (USDC)</label><input id="f-price" name="price" type="number" min="1" step="1" placeholder="145"><span class="error">Price must be a number greater than 0.</span></div>
+<button class="btn btn-primary" type="submit">Publish listing</button>
+<span class="hint">Goes live instantly for everyone, including agents reading GET /api/listings. Agents list through the <a href="prototype/api.html">JSON API</a>.</span>
+</form>
+</aside>
+</main>
+<div class="toast" id="toast">Listing published. It's live.</div>
+<script src="prototype/store.js"></script>
+<script>
+function render(newId){
+const list=AT.load();
+document.getElementById('grid').innerHTML=list.map(function(l){return AT.cardHTML(l,l.id===newId)}).join('');
+document.getElementById('count').textContent=list.length+' tickets live';
+}
+render();
+window.addEventListener('storage',function(e){if(e.key==='at_listings_v1')render()});
+document.getElementById('form').addEventListener('submit',function(ev){
+ev.preventDefault();
+const f=ev.target;
+const body={event:f.event.value,date:f.date.value,venue:f.venue.value,price:f.price.value};
+const res=AT.add(body,'human');
+document.querySelectorAll('.field').forEach(function(el){el.classList.remove('invalid')});
+if(!res.ok){res.errors.forEach(function(e){const el=document.querySelector('.field[data-f="'+e.field+'"]');if(el)el.classList.add('invalid')});return}
+f.reset();
+render(res.listing.id);
+const t=document.getElementById('toast');t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2500);
+});
+</script>
+</body>
+</html>
