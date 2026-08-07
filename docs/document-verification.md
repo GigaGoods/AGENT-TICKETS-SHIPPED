@@ -57,7 +57,7 @@ docs/verification-caveats.md — Full limitations & fraud vectors
 ```bash
 VISION_PROVIDER=google
 GOOGLE_API_KEY=your-key-here
-GOOGLE_VISION_MODEL=gemini-2.0-flash
+GOOGLE_VISION_MODEL=gemini-flash-latest
 ```
 
 **Why Gemini:** Free tier for development, strong document/screenshot understanding, native JSON output, and no separate OCR pipeline needed.

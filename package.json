@@ -7,6 +7,8 @@
     "node": ">=18"
   },
   "scripts": {
+    "start": "node server.js",
+    "test": "node --test",
     "verify:doc": "node examples/verify-document.js"
   }
 }

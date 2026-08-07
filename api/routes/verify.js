@@ -1,6 +1,6 @@
 import { VerificationService, VerificationError } from '../../verification/service.js';
 
-const service = new VerificationService();
+let service;
 
 /**
  * POST /api/verify
@@ -25,12 +25,14 @@ const service = new VerificationService();
 export async function handleVerify(req, res) {
   try {
     const body = await readJsonBody(req);
+    service ??= new VerificationService();
     const result = await service.verifyDocument(body);
 
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ ok: true, verification: result }));
   } catch (err) {
-    const status = err instanceof VerificationError ? err.statusCode : 500;
+    const missingKey = err instanceof Error && err.message.includes('GOOGLE_API_KEY');
+    const status = err instanceof VerificationError ? err.statusCode : missingKey ? 503 : 500;
     const message = err instanceof Error ? err.message : 'Verification failed';
 
     res.writeHead(status, { 'Content-Type': 'application/json' });
@@ -44,8 +46,8 @@ function readJsonBody(req) {
     let data = '';
     req.on('data', (chunk) => {
       data += chunk;
-      if (data.length > 10 * 1024 * 1024) {
-        reject(new VerificationError('Request body too large (max 10MB)', 413));
+      if (data.length > 12 * 1024 * 1024) {
+        reject(new VerificationError('Request body too large (max 12MB)', 413));
         req.destroy();
       }
     });

@@ -1,5 +1,5 @@
-import { EXTRACTION_SYSTEM_PROMPT, EXTRACTION_USER_PROMPT } from '../prompts.js';
-import { DOCUMENT_TYPES } from '../types.js';
+import { EXTRACTION_SYSTEM_PROMPT, EXTRACTION_USER_PROMPT } from '../../prompts.js';
+import { DOCUMENT_TYPES } from '../../types.js';
 
 const DEFAULT_MODEL = 'gpt-4o';
 

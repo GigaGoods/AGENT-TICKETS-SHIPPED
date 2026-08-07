@@ -8,6 +8,7 @@
  * @property {number} confidence
  * @property {string[]} flags
  * @property {string} rawResponse   Provider response for audit/debug
+ * @property {string} [model]       Model that successfully handled the request
  */
 
 /**

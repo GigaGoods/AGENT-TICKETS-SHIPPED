@@ -50,9 +50,12 @@
  * @property {FieldMatch[]} fieldMatches
  * @property {number} confidence          0–1 overall score
  * @property {string[]} flags             Human-review triggers
+ * @property {boolean} ticketDetected
+ * @property {string[]} reviewReasons
  * @property {string} [rejectionReason]
  * @property {string} verifiedAt            ISO timestamp
  * @property {string} provider              Vision provider used
+ * @property {string} [model]               Model that handled the request
  */
 
 /**

@@ -13,7 +13,7 @@ export function loadConfig() {
       openaiApiKey: process.env.OPENAI_API_KEY,
       openaiModel: process.env.OPENAI_VISION_MODEL ?? 'gpt-4o',
       googleApiKey: process.env.GOOGLE_API_KEY,
-      googleModel: process.env.GOOGLE_VISION_MODEL ?? 'gemini-2.0-flash',
+      googleModel: process.env.GOOGLE_VISION_MODEL ?? 'gemini-flash-latest',
     },
     port: Number(process.env.PORT ?? 3000),
   };

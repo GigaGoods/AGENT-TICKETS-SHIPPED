@@ -1,9 +1,19 @@
 const state = {
   account: "seller",
   documentSelected: false,
+  selectedFile: null,
   verified: false,
   published: false,
   funded: false,
+};
+
+const DEFAULT_LISTING = {
+  eventName: "(A-Z) Elliot Schooling & Liam Palmer, L.P. Rhythm, Miguelle & Tons + Ranger Trucco",
+  eventDate: "2026-08-08",
+  venue: "Club Space Miami",
+  seats: "GA",
+  quantity: "1",
+  price: "185",
 };
 
 const $ = (id) => document.getElementById(id);
@@ -99,15 +109,21 @@ function switchAccount(account) {
 
 function handleFile(file) {
   if (!file) return;
-  if (file.size > 10 * 1024 * 1024) {
-    showToast("That file is over the 10 MB demo limit.");
+  if (file.size > 8 * 1024 * 1024) {
+    showToast("That file is over the 8 MB upload limit.");
     return;
   }
 
   state.documentSelected = true;
+  state.selectedFile = file;
+  state.verified = false;
   uploadZone.classList.add("has-file");
   $("uploadTitle").textContent = file.name;
-  $("uploadHint").textContent = `${(file.size / 1024).toFixed(0)} KB · Ready for simulated verification`;
+  $("uploadHint").textContent = `${(file.size / 1024).toFixed(0)} KB · Ready for Gemini verification`;
+  $("verificationResult").hidden = true;
+  $("manualApproveButton").hidden = true;
+  publishButton.disabled = true;
+  publishButton.textContent = "Verify before publishing";
   verifyButton.disabled = false;
   $("verifyStatus").textContent = "Ready";
   $("verifyStatus").className = "status working";
@@ -144,24 +160,147 @@ documentInput.addEventListener("change", () => handleFile(documentInput.files[0]
 });
 uploadZone.addEventListener("drop", (event) => handleFile(event.dataTransfer.files[0]));
 
-verifyButton.addEventListener("click", () => {
-  if (!state.documentSelected || state.verified) return;
+verifyButton.addEventListener("click", async () => {
+  if (!state.documentSelected || !state.selectedFile || state.verified) return;
   verifyButton.disabled = true;
   verifyButton.textContent = "Analyzing document…";
   $("verifyStatus").textContent = "Checking";
 
-  setTimeout(() => {
-    state.verified = true;
-    $("verificationResult").hidden = false;
-    $("verifyStatus").textContent = "Verified";
-    $("verifyStatus").className = "status success";
-    verifyButton.textContent = "Document verified  ✓";
-    publishButton.disabled = false;
-    publishButton.textContent = "Publish verified listing  →";
-    setProgress(2);
-    showToast("Demo verification passed. Your listing is ready to publish.");
-  }, 1200);
+  try {
+    const documentBase64 = await fileToBase64(state.selectedFile);
+    const response = await fetch("/api/verify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        documentBase64,
+        mimeType: state.selectedFile.type || mimeTypeFromName(state.selectedFile.name),
+        listing: {
+          eventName: $("eventName").value,
+          eventDate: $("eventDate").value,
+          venue: $("venue").value,
+          priceUsdc: Number($("price").value),
+          ticketCount: Number($("quantity").value),
+        },
+      }),
+    });
+    const payload = await response.json();
+    if (!response.ok || !payload.ok) {
+      throw new Error(payload.error || "Verification request failed");
+    }
+
+    renderVerification(payload.verification);
+  } catch (error) {
+    state.verified = false;
+    $("verifyStatus").textContent = "Error";
+    $("verifyStatus").className = "status neutral";
+    verifyButton.disabled = false;
+    verifyButton.textContent = "Try verification again  →";
+    showToast(error.message.includes("GOOGLE_API_KEY")
+      ? "Add GOOGLE_API_KEY to .env, restart the server, and try again."
+      : `Verification failed: ${error.message}`);
+  }
 });
+
+function renderVerification(result) {
+  const passed = result.status === "verified";
+  const review = result.status === "needs_review";
+  state.verified = passed;
+
+  const resultBox = $("verificationResult");
+  resultBox.hidden = false;
+  resultBox.className = `verification-result${passed ? "" : review ? " review" : " rejected"}`;
+  $("resultIcon").textContent = passed ? "✓" : review ? "!" : "×";
+  $("resultTitle").textContent = passed
+    ? "Purchase evidence matched"
+    : review
+      ? "Ticket detected — review needed"
+      : result.ticketDetected
+        ? result.rejectionReason?.toLowerCase().includes("match")
+          ? "Ticket detected — listing mismatch"
+          : "Ticket detected — verification rejected"
+        : "Not recognized as a ticket";
+  $("resultConfidence").textContent =
+    `${result.model || "Gemini"} + listing match · ${Math.round(result.confidence * 100)}% confidence`;
+
+  for (const [field, elementId] of [
+    ["eventName", "eventMatch"],
+    ["eventDate", "dateMatch"],
+    ["venue", "venueMatch"],
+  ]) {
+    const match = result.fieldMatches.find((item) => item.field === field);
+    $(elementId).textContent = match?.matched
+      ? "Matched"
+      : match?.reason || "Mismatch";
+  }
+
+  const extracted = result.extracted;
+  const extractedSummary = [
+    extracted.platform,
+    extracted.eventName,
+    extracted.eventDate,
+    extracted.venue,
+  ].filter(Boolean).join(" · ") || "No reliable ticket fields were extracted.";
+  const decisionReasons = result.rejectionReason
+    ? [result.rejectionReason]
+    : result.reviewReasons || [];
+  const flagSummary = result.flags?.length
+    ? ` Flags: ${result.flags.join(", ")}.`
+    : "";
+  $("resultExtracted").textContent = decisionReasons.length
+    ? `${extractedSummary} — ${decisionReasons.join("; ")}.${flagSummary}`
+    : `${extractedSummary}.${flagSummary}`;
+
+  $("verifyStatus").textContent = passed ? "Verified" : review ? "Review" : "Rejected";
+  $("verifyStatus").className = `status ${passed ? "success" : review ? "working" : "neutral"}`;
+  verifyButton.textContent = passed ? "Document verified  ✓" : "Upload a clearer or matching document";
+  verifyButton.disabled = passed;
+  publishButton.disabled = !passed;
+  publishButton.textContent = passed ? "Publish verified listing  →" : "Verification required";
+  $("manualApproveButton").hidden = !review;
+
+  if (passed) {
+    setProgress(2);
+    showToast("Real Gemini verification passed. Your listing is ready to publish.");
+  } else {
+    showToast(review
+      ? `Ticket detected: ${result.reviewReasons?.[0] || "manual review required"}.`
+      : result.rejectionReason || "The document did not match the listing details.");
+  }
+}
+
+$("manualApproveButton").addEventListener("click", () => {
+  state.verified = true;
+  $("manualApproveButton").hidden = true;
+  $("verifyStatus").textContent = "Demo approved";
+  $("verifyStatus").className = "status success";
+  $("resultTitle").textContent = "Ticket manually approved for demo";
+  publishButton.disabled = false;
+  publishButton.textContent = "Publish reviewed listing  →";
+  verifyButton.disabled = true;
+  verifyButton.textContent = "Human review completed  ✓";
+  setProgress(2);
+  showToast("Manual demo approval recorded. This does not prove authenticity.");
+});
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result).split(",", 2)[1]);
+    reader.onerror = () => reject(new Error("Could not read the selected file"));
+    reader.readAsDataURL(file);
+  });
+}
+
+function mimeTypeFromName(name) {
+  const extension = name.split(".").pop()?.toLowerCase();
+  return {
+    png: "image/png",
+    jpg: "image/jpeg",
+    jpeg: "image/jpeg",
+    webp: "image/webp",
+    pdf: "application/pdf",
+  }[extension] || "application/octet-stream";
+}
 
 $("listingForm").addEventListener("submit", (event) => {
   event.preventDefault();
@@ -203,14 +342,16 @@ fundButton.addEventListener("click", () => {
 
 $("resetDemo").addEventListener("click", () => {
   state.documentSelected = false;
+  state.selectedFile = null;
   state.verified = false;
   state.published = false;
   state.funded = false;
   documentInput.value = "";
   uploadZone.classList.remove("has-file");
   $("uploadTitle").textContent = "Drop your document here";
-  $("uploadHint").textContent = "or click to browse · PNG, JPG, WEBP or PDF · max 10 MB";
+  $("uploadHint").textContent = "or click to browse · PNG, JPG, WEBP or PDF · max 8 MB";
   $("verificationResult").hidden = true;
+  $("manualApproveButton").hidden = true;
   $("verifyStatus").textContent = "Not submitted";
   $("verifyStatus").className = "status neutral";
   $("listingStatus").textContent = "Draft";
@@ -219,6 +360,10 @@ $("resetDemo").addEventListener("click", () => {
   verifyButton.textContent = "Verify document  →";
   publishButton.disabled = true;
   publishButton.textContent = "Verify before publishing";
+  Object.entries(DEFAULT_LISTING).forEach(([field, value]) => {
+    $(field).value = value;
+  });
+  syncListingPreview();
   switchAccount("seller");
   showToast("Demo reset.");
 });

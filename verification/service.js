@@ -59,6 +59,7 @@ export class VerificationService {
       ...result,
       verifiedAt: new Date().toISOString(),
       provider: this.vision.name,
+      model: extraction.model,
       listingId,
       disclaimer: caveatInfo.disclaimer,
       activeWarnings: caveatInfo.activeWarnings,

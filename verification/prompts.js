@@ -30,6 +30,9 @@ export const EXTRACTION_USER_PROMPT = `Analyze this ticket proof document and re
 
 Rules:
 - eventDate should be ISO 8601 (YYYY-MM-DD) when possible
+- eventName should contain the complete displayed event or lineup title, not only one artist
 - platform examples: Ticketmaster, Eventbrite, AXS, SeatGeek, StubHub, Dice, See Tickets
 - confidence is 0.0–1.0 based on image clarity and field certainty
-- flags examples: "blurry_image", "possible_screenshot_of_screenshot", "date_not_visible", "suspicious_editing"`;
+- a normal direct screenshot of a ticket app is valid and must NOT be flagged merely for being a screenshot
+- only add flags for concrete concerns; do not flag missing optional fields
+- flags examples: "blurry_image", "cropped_document", "possible_screenshot_of_screenshot", "suspicious_editing"`;

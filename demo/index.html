@@ -57,7 +57,7 @@
 
     <div class="demo-notice">
       <span>◇</span>
-      <p><strong>Demo environment</strong> — Documents stay in your browser. Verification, balances, and payments are simulated; no ticket or funds move.</p>
+      <p><strong>Hybrid demo</strong> — Document analysis is real and uses Gemini. Listings, balances, and payments remain simulated; no ticket or funds move.</p>
     </div>
 
     <section class="seller-view" id="sellerView">
@@ -67,36 +67,38 @@
             <div><p class="step-label">STEP 1 OF 2</p><h2>Proof of purchase</h2></div>
             <span class="status neutral" id="verifyStatus">Not submitted</span>
           </div>
-          <p class="card-description">Upload an order confirmation, receipt, or mobile ticket. Sensitive fields should be redacted.</p>
+          <p class="card-description">First update the listing details to match your ticket. Then upload a redacted order confirmation, receipt, or mobile ticket.</p>
           <label class="upload-zone" id="uploadZone">
             <input type="file" id="documentInput" accept=".png,.jpg,.jpeg,.webp,.pdf">
             <span class="upload-icon">⇧</span>
             <strong id="uploadTitle">Drop your document here</strong>
-            <span id="uploadHint">or click to browse · PNG, JPG, WEBP or PDF · max 10 MB</span>
+            <span id="uploadHint">or click to browse · PNG, JPG, WEBP or PDF · max 8 MB</span>
           </label>
-          <div class="privacy-note"><span>⌾</span><p><strong>Privacy first</strong><br>Demo files are processed locally and discarded when you reset or close this page.</p></div>
+          <div class="privacy-note"><span>⌾</span><p><strong>Redact before upload</strong><br>Hide QR codes, barcodes, payment data, email, and address. The file is sent to Google Gemini and is not stored by this app.</p></div>
           <button class="primary-button full" id="verifyButton" disabled>Verify document <span>→</span></button>
           <div class="verification-result" id="verificationResult" hidden>
-            <div class="result-heading"><span class="success-icon">✓</span><div><strong>Purchase evidence matched</strong><small>Simulated confidence · 94%</small></div></div>
+            <div class="result-heading"><span class="success-icon" id="resultIcon">✓</span><div><strong id="resultTitle">Purchase evidence matched</strong><small id="resultConfidence">Gemini confidence</small></div></div>
             <div class="match-grid">
-              <span>Event <strong>Matched</strong></span>
-              <span>Date <strong>Matched</strong></span>
-              <span>Venue <strong>Matched</strong></span>
+              <span>Event <strong id="eventMatch">—</strong></span>
+              <span>Date <strong id="dateMatch">—</strong></span>
+              <span>Venue <strong id="venueMatch">—</strong></span>
             </div>
+            <p class="result-extracted" id="resultExtracted"></p>
+            <button class="review-button" id="manualApproveButton" type="button" hidden>Approve for this demo only</button>
           </div>
         </div>
 
         <div class="card">
           <div class="card-header"><div><p class="step-label">STEP 2 OF 2</p><h2>Listing details</h2></div><span class="status neutral" id="listingStatus">Draft</span></div>
           <form id="listingForm">
-            <label>Event name<input id="eventName" value="Bad Bunny — DeBÍ TiRAR MáS FOToS Tour" required></label>
+            <label>Event name<input id="eventName" value="(A-Z) Elliot Schooling &amp; Liam Palmer, L.P. Rhythm, Miguelle &amp; Tons + Ranger Trucco" required></label>
             <div class="form-row">
-              <label>Event date<input id="eventDate" type="date" value="2026-09-12" required></label>
-              <label>Venue<input id="venue" value="Madison Square Garden" required></label>
+              <label>Event date<input id="eventDate" type="date" value="2026-08-08" required></label>
+              <label>Venue<input id="venue" value="Club Space Miami" required></label>
             </div>
             <div class="form-row">
-              <label>Section / seats<input id="seats" value="Section 115 · Row 8 · Seats 3–4"></label>
-              <label>Quantity<select id="quantity"><option>1</option><option selected>2</option><option>3</option><option>4</option></select></label>
+              <label>Section / seats<input id="seats" value="GA"></label>
+              <label>Quantity<select id="quantity"><option selected>1</option><option>2</option><option>3</option><option>4</option></select></label>
             </div>
             <label>Price per ticket<div class="price-input"><input id="price" type="number" value="185" min="1"><span>demo USDC</span></div></label>
             <button class="primary-button full" id="publishButton" type="submit" disabled>Verify before publishing</button>
