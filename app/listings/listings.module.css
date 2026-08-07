@@ -1,0 +1,63 @@
+.page {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 48px;
+  align-items: start;
+  padding: 64px 0 96px;
+}
+.pageHead {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+.liveDot {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--steel);
+}
+.liveDot i {
+  width: 8px;
+  height: 8px;
+  border-radius: 99px;
+  background: var(--green);
+  animation: pulse 2s ease infinite;
+}
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+.sell {
+  position: sticky;
+  top: 88px;
+  display: grid;
+  gap: 16px;
+  justify-items: start;
+}
+.sell h2 {
+  font-size: 22px;
+}
+.sellCopy {
+  font-size: 14px;
+  color: var(--slate);
+}
+.sell .hint {
+  font-size: 13px;
+  color: var(--stone);
+}
+@media (max-width: 960px) {
+  .page {
+    grid-template-columns: 1fr;
+  }
+  .sell {
+    position: static;
+    order: -1;
+  }
+}

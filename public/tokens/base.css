@@ -1,0 +1,48 @@
+/* Kempt base element defaults — applied globally to consuming pages.
+   Keeps the calm, premium baseline: white page, slate-900 text, Work Sans
+   headings, IBM Plex Sans body, generous line height. */
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background: var(--surface-page);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: var(--body-md);
+  line-height: var(--body-md-lh);
+  font-feature-settings: "ss01" 1, "cv01" 1;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  color: var(--text-primary);
+  font-weight: var(--weight-semibold);
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  margin: 0;
+}
+h1 { font-weight: var(--weight-bold); letter-spacing: -0.03em; }
+
+p { text-wrap: pretty; }
+
+::selection {
+  background: var(--slate-200);
+  color: var(--slate-900);
+}
+
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

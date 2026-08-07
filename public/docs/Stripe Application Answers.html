@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Stripe application answers</title>
+<link rel="stylesheet" href="../tokens/fonts.css">
+<style>
+doc-page:not(:defined){visibility:hidden}
+body{font-family:"Work Sans",sans-serif;color:#1c1c1e;font-size:15px;line-height:1.6}
+h1{font-size:28px;font-weight:500;letter-spacing:-0.5px;margin:0 0 4px}
+.meta{color:#6b6f7e;font-size:13px;margin-bottom:24px}
+.qa{break-inside:avoid;margin-bottom:24px}
+.qa h2{font-size:15px;font-weight:600;margin:0 0 6px;color:#555a6a}
+.qa p{margin:0 0 8px}
+mark{background:#fff4c4;padding:0 3px;border-radius:3px}
+.note{font-size:13px;color:#6b6f7e;background:#f7f8fa;border-radius:8px;padding:12px 16px}
+</style>
+</head>
+<body>
+<doc-page>
+<h1>Stripe application answers</h1>
+<p class="meta">Copy-paste answers for the Stripe account application · Agent-Tickets</p>
+<div class="qa"><h2>Business description</h2>
+<p>Agent-Tickets is a peer-to-peer marketplace for reselling event tickets (concerts, sports, festivals). Sellers list tickets; buyers pay by card. Funds are held in escrow and released to the seller only after the ticket is transferred to the buyer, which protects both sides of every transaction.</p></div>
+<div class="qa"><h2>What are you selling, and who are your customers?</h2>
+<p>We facilitate resale of event tickets between individual consumers in the United States. The buyer is a consumer purchasing a ticket to a live event; the seller is a consumer who can no longer attend. Agent-Tickets is the platform, not the seller of record for the tickets themselves.</p></div>
+<div class="qa"><h2>How do funds flow?</h2>
+<p>The buyer pays by card via Stripe Checkout. Proceeds fund an escrow that is released to the seller when the ticket transfer is confirmed, or refunded to the buyer if the transfer does not happen within the escrow window. On the settlement side we convert to USDC (via Crossmint) so escrow release and refund are automatic and auditable.</p></div>
+<div class="qa"><h2>Average transaction size and expected volume</h2>
+<p>Average ticket price is roughly $80 to $250. Current stage: early product with low volume, expected <mark>[N]</mark> transactions per month in the first quarter, growing with organizer partnerships.</p></div>
+<div class="qa"><h2>Refund and dispute policy</h2>
+<p>Full automatic refund to the buyer if the ticket is not transferred within the escrow window. Because funds are escrowed until delivery is confirmed, the classic ticket-resale fraud pattern (pay, never receive) is structurally prevented, which we expect to keep chargeback rates low.</p></div>
+<div class="qa"><h2>Website</h2>
+<p><mark>[deployed site URL]</mark> · source: github.com/GigaGoods/AGENT-TICKETS</p></div>
+<p class="note">Heads up: ticket resale and crypto-adjacent flows both get extra review at Stripe. Be explicit that Stripe touches only the card leg (fiat in), that you are the marketplace rather than the ticket seller, and mention the escrow-first design early — it is your strongest risk story. If asked about crypto: card proceeds are converted to USDC by Crossmint, a regulated third party; Stripe is never custodying or selling crypto.</p>
+</doc-page>
+<script src="../doc-page.js"></script>
+</body>
+</html>

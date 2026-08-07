@@ -1,0 +1,117 @@
+.page {
+  padding: 64px 0 96px;
+  display: grid;
+  gap: 64px;
+}
+.pageHead {
+  max-width: 720px;
+  display: grid;
+  gap: 16px;
+}
+.docs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+.endpoint {
+  display: grid;
+  gap: 16px;
+}
+.endpoint .sig {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.method {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: var(--r-full);
+  padding: 4px 12px;
+}
+.method.get {
+  background: var(--teal-light);
+  color: var(--moss);
+}
+.method.post {
+  background: var(--lavender);
+  color: var(--blue);
+}
+.sig code {
+  font-family: var(--mono);
+  font-size: 15px;
+}
+.errTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.errTable th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--steel);
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--hairline);
+}
+.errTable td {
+  padding: 12px;
+  border-bottom: 1px solid var(--hairline-soft);
+  color: var(--slate);
+  vertical-align: top;
+}
+.errTable td code {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--ink);
+}
+.play {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+.playPanel {
+  display: grid;
+  gap: 16px;
+}
+.play textarea {
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--r-md);
+  padding: 16px;
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.7;
+  min-height: 200px;
+  resize: vertical;
+  background: var(--canvas);
+  color: var(--ink);
+}
+.play textarea:focus {
+  outline: none;
+  border: 2px solid var(--blue);
+  padding: 15px;
+}
+.status {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+}
+.status.ok {
+  color: var(--green);
+}
+.status.bad {
+  color: var(--red-text);
+}
+.resp {
+  min-height: 200px;
+}
+@media (max-width: 960px) {
+  .docs,
+  .play {
+    grid-template-columns: 1fr;
+  }
+}

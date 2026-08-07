@@ -1,0 +1,53 @@
+/* Kempt spacing, radius, shadow and layout tokens.
+   Soft rounded corners. Whitespace heavy. Subtle low-opacity shadows only,
+   tinted faint purple rgb(37 16 81), never harsh black drop shadows. */
+
+:root {
+  /* ---- Spacing (4px grid) ---- */
+  --space-0:  0;
+  --space-1:  0.25rem;  /* 4px */
+  --space-2:  0.5rem;   /* 8px */
+  --space-3:  0.75rem;  /* 12px */
+  --space-4:  1rem;     /* 16px */
+  --space-5:  1.25rem;  /* 20px */
+  --space-6:  1.5rem;   /* 24px — standard card padding */
+  --space-8:  2rem;     /* 32px */
+  --space-10: 2.5rem;   /* 40px */
+  --space-12: 3rem;     /* 48px */
+  --space-16: 4rem;     /* 64px */
+  --space-18: 4.5rem;   /* 72px */
+  --space-22: 5.5rem;   /* 88px */
+  --space-24: 6rem;     /* 96px */
+  --space-26: 6.5rem;   /* 104px */
+  --space-30: 7.5rem;   /* 120px */
+  --space-36: 9rem;     /* 144px */
+
+  /* ---- Radius ----
+     Buttons ~12px, inputs ~14px, cards ~20px, badges fully round. */
+  --radius-xs:    6px;
+  --radius-sm:    8px;
+  --radius-md:    12px;   /* buttons */
+  --radius-input: 14px;   /* inputs, kempt accent radius */
+  --radius-lg:    16px;
+  --radius-card:  20px;   /* cards, dialogs (canonical) */
+  --radius-3xl:   24px;   /* large hero panels */
+  --radius-pill:  9999px; /* badges, pills, avatars */
+
+  /* ---- Shadows (faint purple tint, low opacity) ---- */
+  --shadow-xs:   0 1px 2px -1px rgb(37 16 81 / 0.06);
+  --shadow-sm:   0 2px 4px -1px rgb(37 16 81 / 0.06), 0 1px 2px -1px rgb(37 16 81 / 0.04);
+  --shadow-md:   0 4px 8px -2px rgb(37 16 81 / 0.08), 0 2px 4px -2px rgb(37 16 81 / 0.04);
+  --shadow-lg:   0 12px 24px -4px rgb(37 16 81 / 0.1), 0 4px 8px -2px rgb(37 16 81 / 0.04);
+  --shadow-xl:   0 20px 40px -8px rgb(37 16 81 / 0.12), 0 8px 16px -4px rgb(37 16 81 / 0.06);
+  /* Card resting + hover — the two you reach for most */
+  --shadow-card:       0 1px 3px rgb(37 16 81 / 0.04), 0 4px 12px -2px rgb(37 16 81 / 0.06);
+  --shadow-card-hover: 0 4px 8px rgb(37 16 81 / 0.04), 0 16px 32px -4px rgb(37 16 81 / 0.1);
+  --shadow-inner:      inset 0 1px 2px rgb(37 16 81 / 0.06);
+
+  /* ---- Layout ---- */
+  --container-narrow:  672px;   /* forms, content pages */
+  --container-default: 1152px;  /* standard pages */
+  --container-wide:    1280px;  /* search, dashboards */
+  --nav-h: 72px;
+  --page-gutter: clamp(16px, 5vw, 32px); /* @kind spacing */
+}

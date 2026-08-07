@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent-Tickets</title>
+<link rel="stylesheet" href="site.css">
+<style>
+.hero{padding:120px 0 64px;text-align:center;display:grid;justify-items:center;gap:24px}
+.hero .h-display{max-width:900px;text-wrap:balance}
+.hero .sub{max-width:620px}
+.hero-ctas{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.board{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:start}
+.board .code{text-align:left}
+.mini{background:var(--canvas);border:1px solid var(--hairline-soft);border-radius:var(--r-lg);padding:16px;display:grid;gap:8px;text-align:left}
+.mini h4{font-size:16px}
+.mini .small{font-size:13px}
+.mini .price{font-size:18px}
+.hiw-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.hiw{display:grid;gap:12px;align-content:start}
+.hiw .num{font-size:13px;font-weight:600;color:var(--ink);opacity:0.6}
+.hiw h3{font-size:22px;line-height:1.3}
+.hiw p{font-size:14px;line-height:1.55;color:var(--charcoal)}
+.road-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.road{display:grid;gap:16px;align-content:start}
+.road ul{margin:0;padding:0;list-style:none;display:grid;gap:10px;font-size:14px;color:var(--slate)}
+.road li{display:flex;gap:10px;align-items:baseline}
+.road li::before{content:"";width:6px;height:6px;border-radius:99px;background:var(--hairline-strong);flex:none;transform:translateY(-2px)}
+.road.live li::before{background:var(--green)}
+.preview-head{display:flex;justify-content:space-between;align-items:end;gap:16px;margin-bottom:32px;flex-wrap:wrap}
+@media(max-width:960px){.hiw-grid{grid-template-columns:1fr 1fr}.road-grid{grid-template-columns:1fr}.board{grid-template-columns:1fr}}
+@media(max-width:600px){.hiw-grid{grid-template-columns:1fr}.hero{padding:72px 0 48px}}
+</style>
+</head>
+<body>
+<div class="promo"><span class="chip">Spec'd</span>USDC escrow on Solana is designed and committed in the repo. <a href="https://github.com/GigaGoods/AGENT-TICKETS">See the design doc</a></div>
+<header class="nav"><div class="container nav-inner">
+<a class="brand" href="index.html"><span class="brand-mark"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path><path d="M13 5v2M13 17v2M13 11v2"></path></svg></span>Agent-Tickets</a>
+<nav class="nav-links"><a href="index.html" class="active hide-sm">Home</a><a href="listings.html">Listings</a><a href="trust.html">Trust</a><a href="api.html">Agent API</a><a class="btn btn-primary btn-sm" href="listings.html#sell">List a ticket</a></nav>
+</div></header>
+<main>
+<section class="hero container">
+<span class="badge badge-yellow">Peer to peer tickets, settled in USDC</span>
+<h1 class="h-display">One marketplace. Two front doors.</h1>
+<p class="sub">A human lists a ticket with a simple form. An AI agent lists or reads inventory with a single JSON call. Both see the same live listings, instantly.</p>
+<div class="hero-ctas"><a class="btn btn-primary" href="listings.html">Browse live listings</a><a class="btn btn-secondary" href="api.html">Read the agent API</a></div>
+<div class="mockup" style="width:100%;max-width:1000px;margin-top:24px">
+<div class="board">
+<div class="mini"><span class="badge badge-human">Human listed</span><h4>Silverline Tour</h4><span class="small">Fri, Sep 18 · The Anthem, Washington DC</span><span class="price">145 <small>USDC</small></span></div>
+<pre class="code">POST /api/listings
+<span class="c">{</span>
+  <span class="k">"event"</span>: <span class="g">"FC Cascadia vs Rose City"</span>,
+  <span class="k">"price"</span>: <span class="y">88</span>
+<span class="c">}</span>
+<span class="c">→ 201 Created</span></pre>
+<div class="mini"><span class="badge badge-agent">Agent listed</span><h4>FC Cascadia vs Rose City</h4><span class="small">Sat, Sep 5 · Providence Park, Portland</span><span class="price">88 <small>USDC</small></span></div>
+</div>
+</div>
+</section>
+<section class="section-tight container">
+<div class="stat-row">
+<div class="stat"><b>20–30%</b><span>what resale platforms take in combined fees. Agent-Tickets is built to undercut that with escrow.</span></div>
+<div class="stat"><b>2</b><span>front doors, one inventory: a web form for people, a JSON API for agents.</span></div>
+<div class="stat"><b>&lt;30s</b><span>from form submit or API call to a live listing everyone can see.</span></div>
+</div>
+</section>
+<section class="section container" id="how">
+<div class="section-head"><span class="overline">How it works</span><h2 class="h1">Agents are users, not scrapers.</h2></div>
+<div class="hiw-grid">
+<div class="card-feature tint-yellow hiw"><span class="num">01</span><h3>List a ticket</h3><p>Event name, date, venue, price in USDC. One short form, no account gymnastics.</p></div>
+<div class="card-feature tint-rose hiw"><span class="num">02</span><h3>Or let your agent do it</h3><p>POST /api/listings with the same four fields. Agents hit the exact same inventory as the web form.</p></div>
+<div class="card-feature tint-teal hiw"><span class="num">03</span><h3>Everyone sees it live</h3><p>New tickets appear instantly on the listings page and in GET /api/listings, for humans and agents alike.</p></div>
+<div class="card-feature tint-coral hiw"><span class="num">04</span><h3>Settle in escrow next</h3><p>The Solana USDC escrow layer is fully designed and slots onto this listing rail. Buyer funds escrow, release on transfer.</p></div>
+</div>
+</section>
+<section class="section-tight container">
+<div class="preview-head"><div><span class="overline">Live now</span><h2 class="h2" style="margin-top:8px">Fresh listings</h2></div><a class="btn btn-secondary btn-sm" href="listings.html">See all listings</a></div>
+<div class="listing-grid" id="preview"></div>
+</section>
+<section class="section container" id="roadmap">
+<div class="section-head"><span class="overline">Scope</span><h2 class="h1">What's live, what's designed, what's later.</h2></div>
+<div class="road-grid">
+<div class="card road live"><span class="badge badge-success">Live now</span><ul><li>Live listings page, updates instantly</li><li>Web form listing: event, date, venue, price in USDC</li><li>Agent JSON API: POST and GET /api/listings</li><li>Machine readable validation errors so agents self correct</li></ul></div>
+<div class="card road"><span class="badge badge-yellow">Designed, in the repo</span><ul><li>USDC escrow on Solana (Anchor)</li><li>Buyer funds escrow at purchase</li><li>Release to seller on ticket transfer</li><li>Spec committed as a design doc</li></ul></div>
+<div class="card road"><span class="badge badge-human">Later</span><ul><li>MCP server wrapper for agents</li><li>Fiat onramp, disputes, KYC</li><li>Native NFT ticket issuance</li><li>Venue and door verification</li></ul></div>
+</div>
+</section>
+<section class="section-tight container" id="faq" style="max-width:800px">
+<div class="section-head"><span class="overline">FAQ</span><h2 class="h1">Questions</h2></div>
+<div class="faq">
+<details><summary>Who can list a ticket?</summary><p>Anyone. A person uses the web form. An AI agent calls POST /api/listings. Both write to the same live inventory and both show up everywhere within seconds.</p></details>
+<details><summary>Why let agents transact at all?</summary><p>Every resale checkout today assumes a human clicking a webpage. As shopping agents become normal, the marketplace that treats them as first class users gets their inventory and their demand.</p></details>
+<details><summary>Is the escrow live?</summary><p>Not yet. The Solana USDC escrow settlement layer is fully designed, with the spec committed in the repo. It slots onto this listing rail next.</p></details>
+<details><summary>What happens when an agent sends bad input?</summary><p>Validation returns machine readable errors with a field and an error code, so an agent can read the response and correct its own request without a human in the loop.</p></details>
+<details><summary>What about disputes, KYC and fiat?</summary><p>Out of scope for V1. Listings first, settlement next, everything else after.</p></details>
+</div>
+</section>
+<section class="section container">
+<div class="cta-dark">
+<h2 class="h1">Your agent can list a ticket before you finish reading this.</h2>
+<p class="sub">One POST. Live for everyone in under 30 seconds.</p>
+<div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center"><a class="btn btn-on-dark" href="api.html">Try the API playground</a><a class="btn btn-secondary" style="color:#fff;border-color:rgb(255 255 255 / 0.4)" href="listings.html#sell">List one yourself</a></div>
+</div>
+</section>
+</main>
+<footer class="footer"><div class="container">
+<div class="footer-grid">
+<a class="brand" href="index.html"><span class="brand-mark"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path><path d="M13 5v2M13 17v2M13 11v2"></path></svg></span>Agent-Tickets</a>
+<nav><a href="listings.html">Listings</a><a href="trust.html">Trust</a><a href="api.html">Agent API</a><a href="index.html#roadmap">Roadmap</a><a href="https://github.com/GigaGoods/AGENT-TICKETS">GitHub</a></nav>
+</div>
+<div class="footer-note"><span>Peer to peer event tickets for humans and AI agents.</span><span>Zero dependency Node.js · Solana/Anchor escrow spec'd in repo</span></div>
+</div></footer>
+<script src="store.js"></script>
+<script>
+document.getElementById('preview').innerHTML=AT.load().slice(0,3).map(function(l){return AT.cardHTML(l)}).join('');
+window.addEventListener('storage',function(e){if(e.key==='at_listings_v1')document.getElementById('preview').innerHTML=AT.load().slice(0,3).map(function(l){return AT.cardHTML(l)}).join('');});
+</script>
+</body>
+</html>

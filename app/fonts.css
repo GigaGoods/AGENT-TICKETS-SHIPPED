@@ -1,0 +1,64 @@
+/* Kempt webfonts — Work Sans (headings/display) + IBM Plex Sans (body/captions).
+   Only these two families are part of the brand. No other fonts.
+   Font files live in public/assets/fonts (also used by the printable docs
+   under public/docs via public/tokens/fonts.css). */
+
+/* ---- Work Sans ---- */
+@font-face {
+  font-family: "Work Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/assets/fonts/WorkSans-Regular.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Work Sans";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/assets/fonts/WorkSans-Medium.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Work Sans";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/assets/fonts/WorkSans-SemiBold.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Work Sans";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/assets/fonts/WorkSans-Bold.ttf") format("truetype");
+}
+
+/* ---- IBM Plex Sans ---- */
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/assets/fonts/IBMPlexSans-Regular.ttf") format("truetype");
+}
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/assets/fonts/IBMPlexSans-Medium.ttf") format("truetype");
+}
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/assets/fonts/IBMPlexSans-SemiBold.ttf") format("truetype");
+}
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/assets/fonts/IBMPlexSans-Bold.ttf") format("truetype");
+}

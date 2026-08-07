@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Agent-Tickets · Organizer one-pager</title>
+<link rel="stylesheet" href="../tokens/fonts.css">
+<style>
+doc-page:not(:defined){visibility:hidden}
+body{font-family:"Work Sans",sans-serif;color:#1c1c1e}
+.page{display:flex;flex-direction:column;padding:0.7in 0.75in;gap:22px}
+.top{display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:17px;letter-spacing:-0.3px}
+.mark{width:28px;height:28px;border-radius:7px;background:#ffd02f;display:grid;place-items:center}
+.mark svg{width:15px;height:15px}
+.tag{font-size:11px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:#6b6f7e}
+h1{font-size:34px;font-weight:500;letter-spacing:-1px;line-height:1.12;margin:0;max-width:9in;text-wrap:balance}
+.lede{font-size:14.5px;line-height:1.55;color:#555a6a;margin:0;max-width:6.6in}
+.cols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.tile{border-radius:16px;padding:18px;display:grid;gap:8px;align-content:start}
+.tile h3{font-size:15px;font-weight:600;margin:0}
+.tile p{font-size:12.5px;line-height:1.5;margin:0;color:#2c2c34}
+.t-yellow{background:#fff4c4}.t-teal{background:#c3faf5}.t-rose{background:#fde0f0}
+.split{display:grid;grid-template-columns:1.15fr 1fr;gap:20px;flex:1;min-height:0}
+.how h2,.ask h2{font-size:12px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:#6b6f7e;margin:0 0 12px}
+.how ol{margin:0;padding:0;list-style:none;display:grid;gap:10px}
+.how li{display:flex;gap:12px;font-size:13px;line-height:1.5;color:#2c2c34}
+.how li b{flex:none;width:22px;height:22px;border-radius:99px;background:#1c1c1e;color:#fff;display:grid;place-items:center;font-size:11px;font-weight:600}
+.ask{background:#1c1c1e;color:#fff;border-radius:20px;padding:24px;display:grid;gap:12px;align-content:start}
+.ask h2{color:#a5a8b5}
+.ask p{font-size:13px;line-height:1.55;margin:0;color:#e6e7ea}
+.ask .pill{justify-self:start;background:#fff;color:#1c1c1e;border-radius:999px;padding:8px 18px;font-size:12.5px;font-weight:600}
+.foot{display:flex;justify-content:space-between;align-items:center;border-top:1px solid #e0e2e8;padding-top:14px;font-size:11.5px;color:#6b6f7e}
+</style>
+</head>
+<body>
+<doc-page>
+<section class="page">
+<div class="top">
+<span class="brand"><span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#1c1c1e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path><path d="M13 5v2M13 17v2M13 11v2"></path></svg></span>Agent-Tickets</span>
+<span class="tag">For event organizers</span>
+</div>
+<h1>Your fans resell tickets anyway. Give them a rail that doesn't burn them.</h1>
+<p class="lede">Agent-Tickets is a peer-to-peer resale marketplace where every trade settles through USDC escrow: the buyer's money is locked before the ticket moves, and the seller is paid automatically on transfer. Fans pay by card or USDC. It costs organizers nothing.</p>
+<div class="cols">
+<div class="tile t-yellow"><h3>Escrow, not trust</h3><p>No "send first and hope." Funds release on ticket transfer, refund automatically if it never happens. Scam resale of your event stops being your support problem.</p></div>
+<div class="tile t-teal"><h3>Fees fans notice</h3><p>Resale platforms take 20 to 30% in combined fees. Escrow settlement lets us run a fraction of that, so face-value resale actually stays near face value.</p></div>
+<div class="tile t-rose"><h3>AI agents buy here</h3><p>A public JSON API makes AI shopping assistants first-class buyers and sellers, a distribution channel no incumbent resale platform offers.</p></div>
+</div>
+<div class="split">
+<div class="how">
+<h2>How a trade works</h2>
+<ol>
+<li><b>1</b>Seller lists the ticket: event, date, venue, price in USDC. By form, or by API if it's an agent.</li>
+<li><b>2</b>Buyer funds the escrow, with USDC from a wallet or by card (Stripe, converted via Crossmint).</li>
+<li><b>3</b>Seller transfers the ticket; the escrow releases automatically. No transfer, automatic refund.</li>
+<li><b>4</b>You get resale data for your event: volume, prices, demand. Straight from us, not scraped.</li>
+</ol>
+</div>
+<div class="ask">
+<h2>The ask</h2>
+<p>List your event as an official resale partner. One conversation to set up, zero cost, and your fans get protected resale instead of DM roulette.</p>
+<p class="pill">15 minutes this week</p>
+</div>
+</div>
+<div class="foot">
+<span>Live today: listings marketplace + agent API. Escrow: Solana/Anchor spec committed in repo.</span>
+<span>github.com/GigaGoods/AGENT-TICKETS</span>
+</div>
+</section>
+</doc-page>
+<script src="../doc-page.js"></script>
+</body>
+</html>

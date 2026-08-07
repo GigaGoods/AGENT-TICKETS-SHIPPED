@@ -1,0 +1,21 @@
+/* Kempt motion tokens.
+   Calm and refined. Gentle fades and lifts. Nothing loud or bouncy by default. */
+
+:root {
+  /* ---- Easing ---- */
+  --ease:        cubic-bezier(0.22, 1, 0.36, 1);  /* @kind other */ /* default */
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);   /* @kind other */ /* exits */
+  --ease-in:     cubic-bezier(0.7, 0, 0.84, 0);   /* @kind other */ /* enters */
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1); /* @kind other */ /* playful, rare */
+
+  /* ---- Durations ---- */
+  --duration-fast:   150ms;  /* @kind other */
+  --duration-base:   200ms;  /* @kind other */
+  --duration-slow:   300ms;  /* @kind other */
+  --duration-slower: 400ms;  /* @kind other */
+
+  /* ---- Composed transitions ---- */
+  --transition-fast: 150ms var(--ease);
+  --transition-base: 200ms var(--ease);
+  --transition-slow: 300ms var(--ease);
+}

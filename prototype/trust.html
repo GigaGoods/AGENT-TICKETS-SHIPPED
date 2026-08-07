@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trust &amp; escrow · Agent-Tickets</title>
+<link rel="stylesheet" href="site.css">
+<style>
+.hero{padding:96px 0 32px;display:grid;gap:20px;max-width:760px}
+.flow-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.flow{display:grid;gap:12px;align-content:start}
+.flow .num{font-size:13px;font-weight:600;opacity:0.6}
+.flow h3{font-size:22px;line-height:1.3}
+.flow p{font-size:14px;line-height:1.55;color:var(--charcoal)}
+.sides{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.sides ul{margin:0;padding:0;list-style:none;display:grid;gap:12px;font-size:14px;color:var(--slate)}
+.sides li{display:flex;gap:10px}
+.sides li svg{width:16px;height:16px;flex:none;color:var(--green);margin-top:2px}
+@media(max-width:800px){.flow-grid,.sides{grid-template-columns:1fr}.hero{padding:64px 0 24px}}
+</style>
+</head>
+<body>
+<header class="nav"><div class="container nav-inner">
+<a class="brand" href="index.html"><span class="brand-mark"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path><path d="M13 5v2M13 17v2M13 11v2"></path></svg></span>Agent-Tickets</a>
+<nav class="nav-links"><a href="index.html" class="hide-sm">Home</a><a href="listings.html">Listings</a><a href="trust.html" class="active">Trust</a><a href="api.html">Agent API</a></nav>
+</div></header>
+<main>
+<section class="hero container">
+<span class="badge badge-teal">Trust &amp; safety</span>
+<h1 class="h-display" style="font-size:clamp(36px,5vw,60px)">Neither side has to trust the other. That's the point.</h1>
+<p class="sub">P2P resale today happens in DMs and group chats with zero protection. Agent-Tickets replaces "send first and hope" with a USDC escrow on Solana that holds the money until the ticket moves.</p>
+</section>
+<section class="section-tight container">
+<div class="flow-grid">
+<div class="card-feature tint-yellow flow"><span class="num">01</span><h3>Buyer funds escrow</h3><p>Pay in USDC from a wallet, or with a card through Stripe, converted to USDC via Crossmint. Either way the funds land in the escrow account, not with the seller.</p></div>
+<div class="card-feature tint-teal flow"><span class="num">02</span><h3>Seller transfers the ticket</h3><p>The seller hands over the ticket knowing the money is already locked. No chasing a stranger for payment after the fact.</p></div>
+<div class="card-feature tint-rose flow"><span class="num">03</span><h3>Escrow releases, or refunds</h3><p>On transfer, the escrow releases to the seller automatically. If the ticket never moves, the buyer is refunded. Code decides, not a support queue.</p></div>
+</div>
+</section>
+<section class="section container">
+<div class="section-head"><span class="overline">Who's protected</span><h2 class="h1">Both sides, by design</h2></div>
+<div class="sides">
+<div class="card"><h3 class="h4" style="margin-bottom:16px">If you're buying</h3><ul>
+<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>Your money never touches the seller until the ticket is yours.</li>
+<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>Automatic refund if the transfer never happens.</li>
+<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>Prices in plain USDC. No 20 to 30% platform markup buried in fees.</li>
+</ul></div>
+<div class="card"><h3 class="h4" style="margin-bottom:16px">If you're selling</h3><ul>
+<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>You see the funds locked in escrow before you transfer anything.</li>
+<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>Release is automatic on transfer. No waiting on payouts.</li>
+<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>No chargebacks landing on you weeks later.</li>
+</ul></div>
+</div>
+</section>
+<section class="section-tight container">
+<div class="cta-dark">
+<span class="badge badge-yellow">Status</span>
+<h2 class="h1">The escrow layer is designed, not yet live.</h2>
+<p class="sub" style="max-width:560px">The full Solana/Anchor USDC escrow spec is committed in the repo and slots onto the live listing rail next. Today, listings and the agent API are live; settlement is a design doc you can read.</p>
+<div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center"><a class="btn btn-on-dark" href="https://github.com/GigaGoods/AGENT-TICKETS">Read the spec on GitHub</a><a class="btn btn-secondary" style="color:#fff;border-color:rgb(255 255 255 / 0.4)" href="buy.html">Preview the buy flow</a></div>
+</div>
+</section>
+</main>
+<footer class="footer"><div class="container">
+<div class="footer-grid">
+<a class="brand" href="index.html"><span class="brand-mark"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path><path d="M13 5v2M13 17v2M13 11v2"></path></svg></span>Agent-Tickets</a>
+<nav><a href="listings.html">Listings</a><a href="trust.html">Trust</a><a href="api.html">Agent API</a><a href="https://github.com/GigaGoods/AGENT-TICKETS">GitHub</a></nav>
+</div>
+<div class="footer-note"><span>Peer to peer event tickets for humans and AI agents.</span><span>Zero dependency Node.js · Solana/Anchor escrow spec'd in repo</span></div>
+</div></footer>
+</body>
+</html>
